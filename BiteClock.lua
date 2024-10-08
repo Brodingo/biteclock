@@ -12,30 +12,24 @@ local function CheckSkillLine(skillType, skillLineIndex)
     d("Available: " .. tostring(available))
     d("Leveled: " .. tostring(leveled))
     
-    -- Default xpForNextRank to 0 if nil
-    xpForNextRank = xpForNextRank or 0
-    
-    d(string.format("Skill Line: %s, Rank: %d, XP: %d/%d, Available: %s, Leveled: %s", 
-        name, rank, xp, xpForNextRank, tostring(available), tostring(leveled)))
 end
 
 local function GetBiteType()
-
-    -- if isVampire
-    return "none"
+    return "none... yet"
 end
 
 local function Initialize()
 
-    d("BiteClock Loaded")
+    d("BiteClock Init")
+
     local biteType = GetBiteType()
-    d(biteType)
+    -- d(biteType)
+
+    -- Example usage for Vampire skill line THIS IS WORKING
+    CheckSkillLine(SKILL_TYPE_WORLD, 5)
 
     -- Example usage for Werewolf skill line THIS IS WORKING
     CheckSkillLine(SKILL_TYPE_WORLD, 6)
-    
-    -- Example usage for Vampire skill line THIS IS NOT WORKING, 5 is wrong
-    CheckSkillLine(SKILL_TYPE_WORLD, 5)
 
     if biteType == "vampire" or biteType == "werewolf" then
         BiteClockLabel:SetText(string.format("Player is a %s", biteType))
@@ -55,12 +49,16 @@ local function ShowCooldown()
     BiteClockLabel:SetHidden(false)
 end
 
-function BiteClock.OnAddOnLoaded(event, addonName)
-    Initialize()
+function BiteClock.OnAddOnLoaded(eventCode, addonName)
+    if addonName == "BiteClock" then
+        EVENT_MANAGER:UnregisterForEvent("BiteClock", EVENT_ADD_ON_LOADED)
+        Initialize()
+    end
 end
 
+SLASH_COMMANDS["/biteclockinit"] = Initialize
 SLASH_COMMANDS["/biteclockhide"] = HideCooldown
 SLASH_COMMANDS["/biteclockshow"] = ShowCooldown
 
 
-EVENT_MANAGER:RegisterForEvent(BiteClock.name, EVENT_ADD_ON_LOADED, BiteClock.OnAddOnLoaded)
+EVENT_MANAGER:RegisterForEvent("BiteClock", EVENT_ADD_ON_LOADED, BiteClock.OnAddOnLoaded)
