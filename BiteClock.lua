@@ -1,12 +1,14 @@
 BiteClock = {}
 BiteClock.name = "BiteClock"
 
-local function updateClock()
-    d("bite clock!")
+function BiteClock.OnAddOnLoaded()
+    if addonName == BiteClock.name then
+        BiteClock:Initialize()
+    end
 end
 
-function BiteClock.OnAddOnLoaded()
-    updateClock()
+function BiteClock:Initialize()
+    d("BiteClock Loaded")
 end
 
 EVENT_MANAGER:RegisterForEvent(BiteClock.name, EVENT_ADD_ON_LOADED, BiteClock.OnAddOnLoaded)

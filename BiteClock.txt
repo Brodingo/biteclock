@@ -3,3 +3,4 @@
 ## APIVersion: 101043
 
 BiteClock.lua
+BiteClock.xml
