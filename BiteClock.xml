@@ -1,12 +1,12 @@
 <!-- GuiXml>Controls>TopLevelControl>Dimensions/+Anchor/+Controls>Label>Anchor/ -->
 <GuiXml>
     <Controls>
-        <TopLevelControl name="BiteClockWindow" movable="true" mouseEnabled="true" clampedToScreen="true">
+        <TopLevelControl name="BiteClock" movable="true" mouseEnabled="true" clampedToScreen="true">
             <Dimensions x="200" y="50"/>
-            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="10"/>
             <Controls>
-                <Label name="BiteClockWindowCooldownLabel" font="ZoFontGame" color="1,1,1,1" horizontalAlignment="CENTER" verticalAlignment="CENTER">
-                    <Anchor point="CENTER" relativeTo="BiteClockWindow"  relativePoint="CENTER" offsetX="0" offsetY="0"/>
+                <Label name="$(parent)Label" width="200" height="50" font="ZoFontEdit" inheritAlpha="true" wrapMode="TRUNCATE" color="FFFFFF" verticalAlignment="TOP" horizontalAlignment="LEFT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)"  relativePoint="TOP" />
                 </Label>
             </Controls>
         </TopLevelControl>
