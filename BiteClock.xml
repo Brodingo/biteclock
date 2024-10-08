@@ -1,7 +1,7 @@
 <!-- GuiXml>Controls>TopLevelControl>Dimensions/+Anchor/+Controls>Label>Anchor/ -->
 <GuiXml>
     <Controls>
-        <TopLevelControl name="BiteClock" movable="true" mouseEnabled="true" clampedToScreen="true">
+        <TopLevelControl name="BiteClock" movable="true" mouseEnabled="true">
             <Dimensions x="200" y="50"/>
             <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="10"/>
             <Controls>
