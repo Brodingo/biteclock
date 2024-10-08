@@ -13,4 +13,4 @@ Copy directory to your ESO add-ons folder:
 📂`C:\Users\<username>\Documents\Elder Scrolls Online\live\AddOns`
 
 ## Acknowledgements
-* [Great intro to ESO add-ons by @moshulu](https://www.youtube.com/watch?v=ZYsr5pVqhso)
+* [Great intro to ESO add-ons](https://www.youtube.com/watch?v=ZYsr5pVqhso) by [@moshulu](https://github.com/moshulu)
