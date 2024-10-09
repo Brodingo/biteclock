@@ -5,40 +5,86 @@ local function CheckSkillLine(skillType, skillLineIndex)
     local name, rank, xp, xpForNextRank, available, leveled = GetSkillLineInfo(skillType, skillLineIndex)
     
     -- Print each value to debug
-    d("Skill Line Name: " .. tostring(name))
-    d("Rank: " .. tostring(rank))
-    d("XP: " .. tostring(xp))
-    d("XP for Next Rank: " .. tostring(xpForNextRank))
-    d("Available: " .. tostring(available))
-    d("Leveled: " .. tostring(leveled))
+    -- d("Skill Line Name: " .. tostring(name))
+    -- d("Rank: " .. tostring(rank))
+    -- d("XP: " .. tostring(xp))
+    -- d("XP for Next Rank: " .. tostring(xpForNextRank))
+    -- d("Available: " .. tostring(available))
+    -- d("Leveled: " .. tostring(leveled))
+    return xp
     
 end
 
-local function GetBiteType()
-    return "none... yet"
+local function GetSkillId(playerType)
+    return playerType == "vampire" and 5 or 6
+end
+
+local function GetPassiveName(playerType)
+    return playerType == "vampire" and "Blood Ritual" or "Blood Moon"
+end
+
+local function GetPlayerType()
+    local isVampire = CheckSkillLine(SKILL_TYPE_WORLD, GetSkillId("vampire"))
+    local isWerewolf = CheckSkillLine(SKILL_TYPE_WORLD, GetSkillId("werewolf"))
+
+    if isVampire then
+        return "vampire"
+    elseif isWerewolf then
+        return "werewolf"
+    else
+        return "normal"
+    end
+end
+
+local function CheckBiteSkill(playerType)
+    local skillId = GetSkillId(playerType)
+    local skillName = GetPassiveName(playerType)
+    local abilities = GetNumSkillAbilities(SKILL_TYPE_WORLD, skillId)
+
+    d("Check Skill ID: " .. tostring(skillId))
+    d("Check Skill Name: " .. skillName)
+
+    for abilityIndex = 1, abilities do
+        local name, icon, unlocksAt, passive, ult, purchased, luaind, progind, rank = GetSkillAbilityInfo(SKILL_TYPE_WORLD, skillId, abilityIndex)
+        d("index: " .. tostring(abilityIndex))
+        d("name: " .. tostring(name))
+        d("icon: " .. tostring(icon))
+        d("unlocksAt: " .. tostring(unlocksAt))
+        d("passive: " .. tostring(passive))
+        d("ult: " .. tostring(ult))
+        d("purchased: " .. tostring(purchased))
+        d("luaind: " .. tostring(luaind))
+        d("progind: " .. tostring(progind))
+        d("rank: " .. tostring(rank))
+
+        if name == skillName and purchased then
+            return true
+        end
+    end
+    return false
 end
 
 local function Initialize()
-
     d("BiteClock Init")
 
-    local biteType = GetBiteType()
-    -- d(biteType)
+    local playerType = GetPlayerType()
+    d("Player Type: " .. playerType)
 
-    -- Example usage for Vampire skill line THIS IS WORKING
-    CheckSkillLine(SKILL_TYPE_WORLD, 5)
-
-    -- Example usage for Werewolf skill line THIS IS WORKING
-    CheckSkillLine(SKILL_TYPE_WORLD, 6)
-
-    if biteType == "vampire" or biteType == "werewolf" then
-        BiteClockLabel:SetText(string.format("Player is a %s", biteType))
-    else
+    if playerType == "normal" then
         BiteClockLabel:SetText("Not a Vampire or Werewolf :(")
+    else
+        BiteClockLabel:SetText(string.format("Player is a %s", playerType))
+
+        local hasBiteSkill = CheckBiteSkill(playerType)
+
+        d("Player has bite unlocked: ".. tostring(hasBiteSkill))
+
+        -- local biteCooldown = GetCooldown(playerType)
+
+        -- d("Cooldown: " .. tostring(biteCooldown))
     end
 
     -- zo_callLater(function() Initialize() end, 1000)
-
 end
 
 local function HideCooldown()
