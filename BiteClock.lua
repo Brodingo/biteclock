@@ -1,5 +1,9 @@
 BiteClock = {}
 BiteClock.name = "BiteClock"
+BiteClock.defaultSettings = {
+    left = 15,
+    top = 15,
+}
 BiteClock.savedVariables = {}
 
 -- Save window position
@@ -7,18 +11,25 @@ local function SavePosition()
     local left, top = BiteClockWindow:GetLeft(), BiteClockWindow:GetTop()
     BiteClock.savedVariables.left = left
     BiteClock.savedVariables.top = top
-
-    d("Saved Position: " .. left .. ", " .. top)
+    -- d("Saved Position: " .. left .. ", " .. top)
 end
 
 -- Restore window position
 local function RestorePosition()
-    local left = BiteClock.savedVariables.left or 15
-    local top = BiteClock.savedVariables.top or 15
+    local left = BiteClock.savedVariables.left or BiteClock.defaultSettings.left
+    local top = BiteClock.savedVariables.top or BiteClock.defaultSettings.top
     BiteClockWindow:ClearAnchors()
     BiteClockWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left, top)
+    -- d("Restored Position: " .. left .. ", " .. top)
+end
 
-    d("Restored Position: " .. left .. ", " .. top)
+-- Reset window position
+local function ResetPosition()
+    BiteClock.savedVariables.left = BiteClock.defaultSettings.left
+    BiteClock.savedVariables.top = BiteClock.defaultSettings.top
+    RestorePosition()
+    BiteClockWindow:SetHidden(false)
+    -- d("Position reset to default and window shown")
 end
 
 -- Save position when moving the window
@@ -154,10 +165,11 @@ local function Initialize()
 
     -- For normies, just show a message
     if playerType == "normal" then
-        BiteClockWindowLabel:SetText("Not a Vampire or Werewolf :(")
+        BiteClockWindow:SetHidden(true)
+    -- Player is vampire or werewolf so check for passive and cooldown
     else
 
-        BiteClockWindowLabel:SetText(string.format("Player is a %s", playerType))
+        -- BiteClockWindowLabel:SetText(string.format("Player is a %s", playerType))
         
         -- Set the icon to the appropriate bite passive icon
         BiteClockWindowIcon:SetTexture(GetPassiveIcon(playerType))
@@ -165,32 +177,38 @@ local function Initialize()
         -- For valid players, check if they have the bite skill unlocked first
         local hasBiteSkill = CheckBiteSkill(playerType)
 
-        -- d("Player has bite unlocked: ".. tostring(hasBiteSkill))
-
-        -- If the player has the bite unlocked then check the cooldown
-        local biteCooldown = CheckBiteCooldown(playerType)
-
-        -- d("Cooldown: " .. tostring(biteCooldown))
-
-        -- Bite is ready!
-        if not biteCooldown then
-            -- If no cooldown show an exciting message about bite being READY :D
-            -- d(playerType .. " bite available!")
-            BiteClockWindowLabel:SetText("Bite available!")
-            -- Brighten the icon
-            BiteClockWindowIcon:SetAlpha(1)
-        -- Bite is not ready yet, show cooldown
+        if not hasBiteSkill then
+            BiteClockWindowLabel:SetText("Bite not unlocked")
         else
-            -- Dim the icon
-            BiteClockWindowIcon:SetAlpha(0.5)
-            -- If the cooldown is active display the countdown
-            local currentTime = GetFrameTimeSeconds()
-            -- d("Current Time: " .. currentTime)
-            local cooldownRemaining = biteCooldown - currentTime
-            local days, hours, minutes, seconds = FormatTime(cooldownRemaining)
 
-            -- Could add player setting to choose short/long format
-            BiteClockWindowLabel:SetText(string.format("Bite ready in %d days, %d hours, %d minutes, %d seconds", days, hours, minutes, seconds))
+            -- d("Player has bite unlocked: ".. tostring(hasBiteSkill))
+
+            -- If the player has the bite unlocked then check the cooldown
+            local biteCooldown = CheckBiteCooldown(playerType)
+
+            -- d("Cooldown: " .. tostring(biteCooldown))
+
+            -- Bite is ready!
+            if not biteCooldown then
+                -- If no cooldown show an exciting message about bite being READY :D
+                -- d(playerType .. " bite available!")
+                BiteClockWindowLabel:SetText("Bite available!")
+                -- Brighten the icon
+                BiteClockWindowIcon:SetAlpha(1)
+            -- Bite is not ready yet, show cooldown
+            else
+                -- Dim the icon
+                BiteClockWindowIcon:SetAlpha(0.5)
+                -- If the cooldown is active display the countdown
+                local currentTime = GetFrameTimeSeconds()
+                -- d("Current Time: " .. currentTime)
+                local cooldownRemaining = biteCooldown - currentTime
+                local days, hours, minutes, seconds = FormatTime(cooldownRemaining)
+
+                -- Could add player setting to choose short/long format
+                BiteClockWindowLabel:SetText(string.format("Bite ready in %d days, %d hours, %d minutes, %d seconds", days, hours, minutes, seconds))
+
+            end
 
         end
 
@@ -214,6 +232,7 @@ end
 -- SLASH_COMMANDS["/biteclockinit"] = Initialize
 SLASH_COMMANDS["/biteclockhide"] = HideWindow
 SLASH_COMMANDS["/biteclockshow"] = ShowWindow
+SLASH_COMMANDS["/biteclockreset"] = ResetPosition
 
 -- When the addon is loaded fire the init function
 function BiteClock.OnAddOnLoaded(eventCode, addonName)
@@ -227,7 +246,7 @@ function BiteClock.OnAddOnLoaded(eventCode, addonName)
         -- Restore position when addon loads
         RestorePosition()
 
-        -- unregister to avoid repeating init
+        -- Unregister to avoid repeating init
         EVENT_MANAGER:UnregisterForEvent("BiteClock", EVENT_ADD_ON_LOADED)
         Initialize()
     end

@@ -15,6 +15,7 @@ Copy directory to your ESO add-ons folder:
 ### Slash Commands
 `/biteclockhide`
 `/biteclockshow`
+`/biteclockreset`
 
 ## Acknowledgements
 * [Great intro to ESO add-ons](https://www.youtube.com/watch?v=ZYsr5pVqhso) by [@moshulu](https://github.com/moshulu)
