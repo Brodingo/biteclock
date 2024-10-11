@@ -1,5 +1,30 @@
 BiteClock = {}
 BiteClock.name = "BiteClock"
+BiteClock.savedVariables = {}
+
+-- Save window position
+local function SavePosition()
+    local left, top = BiteClockWindow:GetLeft(), BiteClockWindow:GetTop()
+    BiteClock.savedVariables.left = left
+    BiteClock.savedVariables.top = top
+
+    d("Saved Position: " .. left .. ", " .. top)
+end
+
+-- Restore window position
+local function RestorePosition()
+    local left = BiteClock.savedVariables.left or 15
+    local top = BiteClock.savedVariables.top or 15
+    BiteClockWindow:ClearAnchors()
+    BiteClockWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left, top)
+
+    d("Restored Position: " .. left .. ", " .. top)
+end
+
+-- Save position when moving the window
+function BiteClock.OnMoveStop()
+    SavePosition()
+end
 
 -- Check if the player has the given skill line unlocked
 local function CheckSkillLine(skillType, skillLineIndex)
@@ -129,13 +154,13 @@ local function Initialize()
 
     -- For normies, just show a message
     if playerType == "normal" then
-        BiteClockLabel:SetText("Not a Vampire or Werewolf :(")
+        BiteClockWindowLabel:SetText("Not a Vampire or Werewolf :(")
     else
 
-        BiteClockLabel:SetText(string.format("Player is a %s", playerType))
+        BiteClockWindowLabel:SetText(string.format("Player is a %s", playerType))
         
         -- Set the icon to the appropriate bite passive icon
-        BiteClockIcon:SetTexture(GetPassiveIcon(playerType))
+        BiteClockWindowIcon:SetTexture(GetPassiveIcon(playerType))
 
         -- For valid players, check if they have the bite skill unlocked first
         local hasBiteSkill = CheckBiteSkill(playerType)
@@ -151,13 +176,13 @@ local function Initialize()
         if not biteCooldown then
             -- If no cooldown show an exciting message about bite being READY :D
             -- d(playerType .. " bite available!")
-            BiteClockLabel:SetText("Bite available!")
+            BiteClockWindowLabel:SetText("Bite available!")
             -- Brighten the icon
-            BiteClockIcon:SetAlpha(1)
+            BiteClockWindowIcon:SetAlpha(1)
         -- Bite is not ready yet, show cooldown
         else
             -- Dim the icon
-            BiteClockIcon:SetAlpha(0.5)
+            BiteClockWindowIcon:SetAlpha(0.5)
             -- If the cooldown is active display the countdown
             local currentTime = GetFrameTimeSeconds()
             -- d("Current Time: " .. currentTime)
@@ -165,7 +190,7 @@ local function Initialize()
             local days, hours, minutes, seconds = FormatTime(cooldownRemaining)
 
             -- Could add player setting to choose short/long format
-            BiteClockLabel:SetText(string.format("Bite ready in %d days, %d hours, %d minutes, %d seconds", days, hours, minutes, seconds))
+            BiteClockWindowLabel:SetText(string.format("Bite ready in %d days, %d hours, %d minutes, %d seconds", days, hours, minutes, seconds))
 
         end
 
@@ -176,23 +201,32 @@ local function Initialize()
 end
 
 -- Slash command to hide UI
-local function HideCooldown()
-    BiteClockLabel:SetHidden(true)
+local function HideWindow()
+    BiteClockWindow:SetHidden(true)
 end
 
 -- Slash command to show UI
-local function ShowCooldown()
-    BiteClockLabel:SetHidden(false)
+local function ShowWindow()
+    BiteClockWindow:SetHidden(false)
 end
 
 -- Slash Commands
 -- SLASH_COMMANDS["/biteclockinit"] = Initialize
-SLASH_COMMANDS["/biteclockhide"] = HideCooldown
-SLASH_COMMANDS["/biteclockshow"] = ShowCooldown
+SLASH_COMMANDS["/biteclockhide"] = HideWindow
+SLASH_COMMANDS["/biteclockshow"] = ShowWindow
 
 -- When the addon is loaded fire the init function
 function BiteClock.OnAddOnLoaded(eventCode, addonName)
     if addonName == "BiteClock" then
+
+        BiteClock.savedVariables = ZO_SavedVars:New("BiteClockData", 1, nil, {})
+
+        -- Register to save position on move stop
+        BiteClockWindow:SetHandler("OnMoveStop", BiteClock.OnMoveStop)
+
+        -- Restore position when addon loads
+        RestorePosition()
+
         -- unregister to avoid repeating init
         EVENT_MANAGER:UnregisterForEvent("BiteClock", EVENT_ADD_ON_LOADED)
         Initialize()

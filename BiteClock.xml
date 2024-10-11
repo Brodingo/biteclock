@@ -1,11 +1,11 @@
 <!-- GuiXml>Controls>TopLevelControl>Dimensions/+Anchor/+Controls>Label>Anchor/ -->
 <GuiXml>
     <Controls>
-        <TopLevelControl name="BiteClock" movable="true" mouseEnabled="true">
+        <TopLevelControl name="BiteClockWindow" movable="true" mouseEnabled="true">
             <Dimensions x="380" y="32"/>
             <Anchor point="TOPLEFT" offsetX="15" offsetY="15"/>
             <Controls>
-                <Texture name="$(parent)Icon" textureFile="">
+                <Texture name="$(parent)Icon" textureFile="/esoui/art/icons/ability_fightersguild_001.dds">
                     <Dimensions x="32" y="32" />
                     <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="-5"/>
                 </Texture>
