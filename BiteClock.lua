@@ -6,6 +6,19 @@ BiteClock.defaultSettings = {
 }
 BiteClock.savedVariables = {}
 
+local BITECLOCK_VARS = {
+    vampire = {
+        skillId = 5,
+        passiveName = "Blood Ritual",
+        icon = "/esoui/art/icons/passive_u26_vampire_05.dds"
+        },
+    werewolf = {
+        skillId = 6,
+        passiveName = "Bloodmoon",
+        icon = "/esoui/art/icons/ability_werewolf_008.dds"
+    }
+}
+
 -- Save window position
 local function SavePosition()
     local left, top = BiteClockWindow:GetLeft(), BiteClockWindow:GetTop()
@@ -53,48 +66,27 @@ local function CheckSkillLine(skillType, skillLineIndex)
     
 end
 
--- ID of the skill line, assumed V/W
-local function GetSkillId(playerType)
-    return playerType == "vampire" and 5 or 6
-end
-
--- Name of the bite passive skill, assumed V/W
-local function GetPassiveName(playerType)
-    return playerType == "vampire" and "Blood Ritual" or "Bloodmoon"
-end
-
--- Path of the passive skill icon, assumed V/W
-local function GetPassiveIcon(playerType)
-    return playerType == "vampire" and "/esoui/art/icons/passive_u26_vampire_05.dds" or "/esoui/art/icons/ability_werewolf_008.dds"
-end
-
 -- Check what kind of player we're dealing with
 local function GetPlayerType()
-    local isVampire = CheckSkillLine(SKILL_TYPE_WORLD, GetSkillId("vampire"))
-    local isWerewolf = CheckSkillLine(SKILL_TYPE_WORLD, GetSkillId("werewolf"))
-
-    if isVampire then
+    if CheckSkillLine(SKILL_TYPE_WORLD, BITECLOCK_VARS.vampire.skillId) then
         return "vampire"
-    elseif isWerewolf then
-        return "werewolf"
-    else
-        return "normal"
     end
+
+    if CheckSkillLine(SKILL_TYPE_WORLD, BITECLOCK_VARS.werewolf.skillId) then
+        return "werewolf"
+    end
+
+    return "normal"
 end
 
 -- Check if player has the given bite passive ability unlocked and purchased
 -- Could also support notifying players to get the skill if available
 local function CheckBiteSkill(playerType)
-    local skillId = GetSkillId(playerType)
-    local skillName = GetPassiveName(playerType)
-    local abilities = GetNumSkillAbilities(SKILL_TYPE_WORLD, skillId)
-
-    -- d("Check Skill ID: " .. tostring(skillId))
-    -- d("Check Skill Name: " .. skillName)
+    local abilities = GetNumSkillAbilities(SKILL_TYPE_WORLD, BITECLOCK_VARS[playerType].skillId)
 
     -- Look through all the ability and check for the relevant skill info
     for abilityIndex = 1, abilities do
-        local name, icon, unlocksAt, passive, ult, purchased, luaind, progind, rank = GetSkillAbilityInfo(SKILL_TYPE_WORLD, skillId, abilityIndex)
+        local name, icon, unlocksAt, passive, ult, purchased, luaind, progind, rank = GetSkillAbilityInfo(SKILL_TYPE_WORLD, BITECLOCK_VARS[playerType].skillId, abilityIndex)
         -- d("index: " .. tostring(abilityIndex))
         -- d("name: " .. tostring(name))
         -- d("icon: " .. tostring(icon)) -- could be useful for showing in UI
@@ -106,7 +98,7 @@ local function CheckBiteSkill(playerType)
         -- d("progind: " .. tostring(progind))
         -- d("rank: " .. tostring(rank))
 
-        if name == skillName and purchased then
+        if name == BITECLOCK_VARS[playerType].passiveName and purchased then
             return true
         end
     end
@@ -116,7 +108,8 @@ end
 -- Checks for the bite cool down and returns remaining time
 local function CheckBiteCooldown(playerType)
     local numBuffs = GetNumBuffs("player")
-    local cooldownName = GetPassiveName(playerType).." Cooldown"
+    local cooldownName = BITECLOCK_VARS[playerType].passiveName.." Cooldown"
+
     for i = 1, numBuffs do
         local buffName, timeStarted, timeEnding, buffSlot, stackCount, iconFilename, buffType, effectType, abilityType, statusEffectType, abilityId, canClickOff, castByPlayer = GetUnitBuffInfo("player", i)
 
@@ -172,7 +165,7 @@ local function Initialize()
         -- BiteClockWindowLabel:SetText(string.format("Player is a %s", playerType))
         
         -- Set the icon to the appropriate bite passive icon
-        BiteClockWindowIcon:SetTexture(GetPassiveIcon(playerType))
+        BiteClockWindowIcon:SetTexture(BITECLOCK_VARS[playerType].icon)
 
         -- For valid players, check if they have the bite skill unlocked first
         local hasBiteSkill = CheckBiteSkill(playerType)
@@ -180,13 +173,10 @@ local function Initialize()
         if not hasBiteSkill then
             BiteClockWindowLabel:SetText("Bite not unlocked")
         else
-
             -- d("Player has bite unlocked: ".. tostring(hasBiteSkill))
 
             -- If the player has the bite unlocked then check the cooldown
             local biteCooldown = CheckBiteCooldown(playerType)
-
-            -- d("Cooldown: " .. tostring(biteCooldown))
 
             -- Bite is ready!
             if not biteCooldown then
@@ -209,9 +199,7 @@ local function Initialize()
                 BiteClockWindowLabel:SetText(string.format("Bite ready in %d days, %d hours, %d minutes, %d seconds", days, hours, minutes, seconds))
 
             end
-
         end
-
     end
 
     -- Refresh checks, to check if player gets skill line, passive ability or when tracking cooldown
