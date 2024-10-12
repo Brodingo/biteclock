@@ -222,12 +222,26 @@ local function ShowWindow()
 end
 
 -- Hide and show on pause/unpause
-local function OnReticleHiddenUpdate(eventCode, hidden)
-    if hidden then
-        d("Reticle hidden - hiding BiteClockWindow")
+local function IsGameMenuOpen()
+    return SCENE_MANAGER:IsShowing("hudui") or SCENE_MANAGER:IsShowing("hud")
+end
+
+local function OnUICameraModeChanged(eventCode, uiMode)
+    if uiMode then
+        d("UI mode activated - hiding BiteClockWindow")
         BiteClockWindow:SetHidden(true)
     else
-        d("Reticle shown - showing BiteClockWindow")
+        d("UI mode deactivated - showing BiteClockWindow")
+        BiteClockWindow:SetHidden(false)
+    end
+end
+
+local function OnReticleHiddenUpdate(eventCode, hidden)
+    if hidden and not IsGameMenuOpen() then
+        d("Reticle hidden (not game menu) - hiding BiteClockWindow")
+        BiteClockWindow:SetHidden(true)
+    else
+        d("Reticle shown or game menu - showing BiteClockWindow")
         BiteClockWindow:SetHidden(false)
     end
 end
@@ -251,6 +265,7 @@ function BiteClock.OnAddOnLoaded(eventCode, addonName)
         RestorePosition()
 
         -- Hide and show on pause/unpause
+        EVENT_MANAGER:RegisterForEvent("BiteClock", EVENT_GAME_CAMERA_UI_MODE_CHANGED, OnUICameraModeChanged)
         EVENT_MANAGER:RegisterForEvent("BiteClock", EVENT_RETICLE_HIDDEN_UPDATE, OnReticleHiddenUpdate)
 
         -- Unregister to avoid repeating init
