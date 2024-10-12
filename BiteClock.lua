@@ -223,25 +223,25 @@ end
 
 -- Hide and show on pause/unpause
 local function IsGameMenuOpen()
-    return SCENE_MANAGER:IsShowing("hudui") or SCENE_MANAGER:IsShowing("hud")
+    return SCENE_MANAGER:IsShowing("hudui") --or SCENE_MANAGER:IsShowing("hud")
 end
 
 local function OnUICameraModeChanged(eventCode, uiMode)
     if uiMode then
-        d("UI mode activated - hiding BiteClockWindow")
+        -- d("UI mode activated - hiding BiteClockWindow")
         BiteClockWindow:SetHidden(true)
     else
-        d("UI mode deactivated - showing BiteClockWindow")
+        -- d("UI mode deactivated - showing BiteClockWindow")
         BiteClockWindow:SetHidden(false)
     end
 end
 
 local function OnReticleHiddenUpdate(eventCode, hidden)
     if hidden and not IsGameMenuOpen() then
-        d("Reticle hidden (not game menu) - hiding BiteClockWindow")
+        -- d("Reticle hidden (not game menu) - hiding BiteClockWindow")
         BiteClockWindow:SetHidden(true)
     else
-        d("Reticle shown or game menu - showing BiteClockWindow")
+        -- d("Reticle shown or game menu - showing BiteClockWindow")
         BiteClockWindow:SetHidden(false)
     end
 end
