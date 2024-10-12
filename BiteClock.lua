@@ -142,8 +142,13 @@ local function FormatTime(seconds)
     local hours = math.floor(seconds / 3600)
     seconds = seconds % 3600
     local minutes = math.floor(seconds / 60)
-    seconds = seconds % 60
-    return days, hours, minutes, seconds
+    seconds = math.floor(seconds % 60)
+
+    local function pluralize(value, unit)
+        return value == 1 and (value .. " " .. unit) or (value .. " " .. unit .. "s")
+    end
+
+    return pluralize(days, "day"), pluralize(hours, "hour"), pluralize(minutes, "minute"), pluralize(seconds, "second")
 end
 
 local function Initialize()
@@ -196,7 +201,7 @@ local function Initialize()
                 local days, hours, minutes, seconds = FormatTime(cooldownRemaining)
 
                 -- Could add player setting to choose short/long format
-                BiteClockWindowLabel:SetText(string.format("Bite ready in %d days, %d hours, %d minutes, %d seconds", days, hours, minutes, seconds))
+                BiteClockWindowLabel:SetText(string.format("Bite ready in %s, %s, %s, %s", days, hours, minutes, seconds))
 
             end
         end
@@ -216,6 +221,17 @@ local function ShowWindow()
     BiteClockWindow:SetHidden(false)
 end
 
+-- Hide and show on pause/unpause
+local function OnReticleHiddenUpdate(eventCode, hidden)
+    if hidden then
+        d("Reticle hidden - hiding BiteClockWindow")
+        BiteClockWindow:SetHidden(true)
+    else
+        d("Reticle shown - showing BiteClockWindow")
+        BiteClockWindow:SetHidden(false)
+    end
+end
+
 -- Slash Commands
 -- SLASH_COMMANDS["/biteclockinit"] = Initialize
 SLASH_COMMANDS["/biteclockhide"] = HideWindow
@@ -233,6 +249,9 @@ function BiteClock.OnAddOnLoaded(eventCode, addonName)
 
         -- Restore position when addon loads
         RestorePosition()
+
+        -- Hide and show on pause/unpause
+        EVENT_MANAGER:RegisterForEvent("BiteClock", EVENT_RETICLE_HIDDEN_UPDATE, OnReticleHiddenUpdate)
 
         -- Unregister to avoid repeating init
         EVENT_MANAGER:UnregisterForEvent("BiteClock", EVENT_ADD_ON_LOADED)
