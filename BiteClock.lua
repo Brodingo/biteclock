@@ -107,30 +107,49 @@ end
 
 -- Checks for the bite cool down and returns remaining time
 local function CheckBiteCooldown(playerType)
-    local numBuffs = GetNumBuffs("player")
-    local cooldownName = BITECLOCK_VARS[playerType].passiveName.." Cooldown"
+    local lastTimeEnding = BiteClock.savedVariables.lastTimeEnding
+    local currentTime = GetFrameTimeSeconds()
 
-    for i = 1, numBuffs do
-        local buffName, timeStarted, timeEnding, buffSlot, stackCount, iconFilename, buffType, effectType, abilityType, statusEffectType, abilityId, canClickOff, castByPlayer = GetUnitBuffInfo("player", i)
+    -- Check for an existing last bite cooldown
+    if lastTimeEnding then
+        -- If enough time has passed clear it out
+        if currentTime > lastTimeEnding then
+            BiteClock.savedVariables.lastTimeEnding = GetNumSkillAbilities
+            return false
+        -- Otherwise return the last cooldown
+        else
+            return lastTimeEnding
+        end
 
-        -- d("buffName: " .. tostring(buffName))
-        -- d("timeStarted: " .. tostring(timeStarted))
-        -- d("timeEnding: " .. tostring(timeEnding))
-        -- d("buffSlot: " .. tostring(buffSlot))
-        -- d("stackCount: " .. tostring(stackCount))
-        -- d("iconFilename: " .. tostring(iconFilename))
-        -- d("buffType: " .. tostring(buffType))
-        -- d("effectType: " .. tostring(effectType))
-        -- d("abilityType: " .. tostring(abilityType))
-        -- d("statusEffectType: " .. tostring(statusEffectType))
-        -- d("canClickOff: " .. tostring(canClickOff))
-        -- d("castByPlayer: " .. tostring(castByPlayer))
-
-        if buffName == cooldownName then
-            -- d(cooldownName.." Found")
-            return timeEnding
+    else
+        local numBuffs = GetNumBuffs("player")
+        local cooldownName = BITECLOCK_VARS[playerType].passiveName.." Cooldown"
+    
+        for i = 1, numBuffs do
+            local buffName, timeStarted, timeEnding, buffSlot, stackCount, iconFilename, buffType, effectType, abilityType, statusEffectType, abilityId, canClickOff, castByPlayer = GetUnitBuffInfo("player", i)
+    
+            -- d("buffName: " .. tostring(buffName))
+            -- d("timeStarted: " .. tostring(timeStarted))
+            -- d("timeEnding: " .. tostring(timeEnding))
+            -- d("buffSlot: " .. tostring(buffSlot))
+            -- d("stackCount: " .. tostring(stackCount))
+            -- d("iconFilename: " .. tostring(iconFilename))
+            -- d("buffType: " .. tostring(buffType))
+            -- d("effectType: " .. tostring(effectType))
+            -- d("abilityType: " .. tostring(abilityType))
+            -- d("statusEffectType: " .. tostring(statusEffectType))
+            -- d("canClickOff: " .. tostring(canClickOff))
+            -- d("castByPlayer: " .. tostring(castByPlayer))
+    
+            if buffName == cooldownName then
+                -- d(cooldownName.." Found")
+                -- Save the timeEnding
+                BiteClock.savedVariables.lastBiteTime = timeEnding
+                return timeEnding
+            end
         end
     end
+
     return false
     -- d("No Blood Ritual cooldown active.")
 end
