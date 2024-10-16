@@ -55,28 +55,27 @@ local function CheckSkillLine(skillType, skillLineIndex)
     local name, rank, xp, xpForNextRank, available, leveled = GetSkillLineInfo(skillType, skillLineIndex)
     
     -- Need to fix variable names, they appear out of order compared to example
-    -- Print each value to debug
-    -- d("Skill Line Name: " .. tostring(name))
-    -- d("Rank: " .. tostring(rank))
-    -- d("XP: " .. tostring(xp))
-    -- d("XP for Next Rank: " .. tostring(xpForNextRank))
-    -- d("Available: " .. tostring(available))
-    -- d("Leveled: " .. tostring(leveled))
     return xp
     
 end
 
 -- Check what kind of player we're dealing with
 local function GetPlayerType()
+
+    -- Check if playerType is already saved in the saved variables
+    if BiteClock.savedVariables.playerType and BiteClock.savedVariables.playerType ~= "normal" then
+        return BiteClock.savedVariables.playerType
+    end
+
     if CheckSkillLine(SKILL_TYPE_WORLD, BITECLOCK_VARS.vampire.skillId) then
-        return "vampire"
+        BiteClock.savedVariables.playerType = "vampire"
+    elseif CheckSkillLine(SKILL_TYPE_WORLD, BITECLOCK_VARS.werewolf.skillId) then
+        BiteClock.savedVariables.playerType = "werewolf"
+    else
+        BiteClock.savedVariables.playerType = "normal"
     end
 
-    if CheckSkillLine(SKILL_TYPE_WORLD, BITECLOCK_VARS.werewolf.skillId) then
-        return "werewolf"
-    end
-
-    return "normal"
+    return BiteClock.savedVariables.playerType
 end
 
 -- Check if player has the given bite passive ability unlocked and purchased
@@ -87,16 +86,6 @@ local function CheckBiteSkill(playerType)
     -- Look through all the ability and check for the relevant skill info
     for abilityIndex = 1, abilities do
         local name, icon, unlocksAt, passive, ult, purchased, luaind, progind, rank = GetSkillAbilityInfo(SKILL_TYPE_WORLD, BITECLOCK_VARS[playerType].skillId, abilityIndex)
-        -- d("index: " .. tostring(abilityIndex))
-        -- d("name: " .. tostring(name))
-        -- d("icon: " .. tostring(icon)) -- could be useful for showing in UI
-        -- d("unlocksAt: " .. tostring(unlocksAt))
-        -- d("passive: " .. tostring(passive))
-        -- d("ult: " .. tostring(ult))
-        -- d("purchased: " .. tostring(purchased))
-        -- d("luaind: " .. tostring(luaind))
-        -- d("progind: " .. tostring(progind))
-        -- d("rank: " .. tostring(rank))
 
         if name == BITECLOCK_VARS[playerType].passiveName and purchased then
             return true
@@ -114,7 +103,7 @@ local function CheckBiteCooldown(playerType)
     if lastTimeEnding then
         -- If enough time has passed clear it out
         if currentTime > lastTimeEnding then
-            BiteClock.savedVariables.lastTimeEnding = GetNumSkillAbilities
+            BiteClock.savedVariables.lastTimeEnding = nil
             return false
         -- Otherwise return the last cooldown
         else
@@ -127,25 +116,12 @@ local function CheckBiteCooldown(playerType)
     
         for i = 1, numBuffs do
             local buffName, timeStarted, timeEnding, buffSlot, stackCount, iconFilename, buffType, effectType, abilityType, statusEffectType, abilityId, canClickOff, castByPlayer = GetUnitBuffInfo("player", i)
-    
-            -- d("buffName: " .. tostring(buffName))
-            -- d("timeStarted: " .. tostring(timeStarted))
-            -- d("timeEnding: " .. tostring(timeEnding))
-            -- d("buffSlot: " .. tostring(buffSlot))
-            -- d("stackCount: " .. tostring(stackCount))
-            -- d("iconFilename: " .. tostring(iconFilename))
-            -- d("buffType: " .. tostring(buffType))
-            -- d("effectType: " .. tostring(effectType))
-            -- d("abilityType: " .. tostring(abilityType))
-            -- d("statusEffectType: " .. tostring(statusEffectType))
-            -- d("canClickOff: " .. tostring(canClickOff))
-            -- d("castByPlayer: " .. tostring(castByPlayer))
-    
+
             if buffName == cooldownName then
                 -- d(cooldownName.." Found")
                 -- Save the timeEnding
-                BiteClock.savedVariables.lastBiteTime = timeEnding
-                return timeEnding
+                BiteClock.savedVariables.lastTimeEnding = timeEnding
+                return BiteClock.savedVariables.lastTimeEnding
             end
         end
     end
