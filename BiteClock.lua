@@ -139,6 +139,10 @@ local function FormatTime(seconds)
     local minutes = math.floor(seconds / 60)
     seconds = math.floor(seconds % 60)
 
+    if BiteClock.savedVariables.timeFormat == "short" then
+        return days, hours, minutes, seconds
+    end
+
     local function pluralize(value, unit)
         return value == 1 and (value .. " " .. unit) or (value .. " " .. unit .. "s")
     end
@@ -158,12 +162,10 @@ local function Initialize()
 
     -- For normies, just show a message
     if playerType == "normal" then
-        BiteClockWindow:SetHidden(true)
+        BiteClockWindowLabel:SetText("Not a vampire/werewolf")
+        -- BiteClockWindow:SetHidden(true)
     -- Player is vampire or werewolf so check for passive and cooldown
     else
-
-        -- BiteClockWindowLabel:SetText(string.format("Player is a %s", playerType))
-        
         -- Set the icon to the appropriate bite passive icon
         BiteClockWindowIcon:SetTexture(BITECLOCK_VARS[playerType].icon)
 
@@ -216,6 +218,15 @@ local function ShowWindow()
     BiteClockWindow:SetHidden(false)
 end
 
+-- Slash command to change formats
+local function ShortFormat()
+    BiteClock.savedVariables.timeFormat = "short"
+end
+-- Slash command to change formats
+local function LongFormat()
+    BiteClock.savedVariables.timeFormat = "long"
+end
+
 -- Hide and show on pause/unpause
 local function IsGameMenuOpen()
     return SCENE_MANAGER:IsShowing("hudui") --or SCENE_MANAGER:IsShowing("hud")
@@ -246,27 +257,30 @@ end
 SLASH_COMMANDS["/biteclockhide"] = HideWindow
 SLASH_COMMANDS["/biteclockshow"] = ShowWindow
 SLASH_COMMANDS["/biteclockreset"] = ResetPosition
+SLASH_COMMANDS["/biteclockshort"] = ShortFormat
+SLASH_COMMANDS["/biteclocklong"] = LongFormat
 
 -- When the addon is loaded fire the init function
 function BiteClock.OnAddOnLoaded(eventCode, addonName)
-    if addonName == "BiteClock" then
 
-        BiteClock.savedVariables = ZO_SavedVars:New("BiteClockData", 1, nil, {})
+    if addonName ~= "BiteClock" then return end
 
-        -- Register to save position on move stop
-        BiteClockWindow:SetHandler("OnMoveStop", BiteClock.OnMoveStop)
+    BiteClock.savedVariables = ZO_SavedVars:NewCharacterIdSettings("BiteClockData", 1, nil, {})
 
-        -- Restore position when addon loads
-        RestorePosition()
+    -- Register to save position on move stop
+    BiteClockWindow:SetHandler("OnMoveStop", BiteClock.OnMoveStop)
 
-        -- Hide and show on pause/unpause
-        EVENT_MANAGER:RegisterForEvent("BiteClock", EVENT_GAME_CAMERA_UI_MODE_CHANGED, OnUICameraModeChanged)
-        EVENT_MANAGER:RegisterForEvent("BiteClock", EVENT_RETICLE_HIDDEN_UPDATE, OnReticleHiddenUpdate)
+    -- Restore position when addon loads
+    RestorePosition()
 
-        -- Unregister to avoid repeating init
-        EVENT_MANAGER:UnregisterForEvent("BiteClock", EVENT_ADD_ON_LOADED)
-        Initialize()
-    end
+    -- Hide and show on pause/unpause
+    EVENT_MANAGER:RegisterForEvent("BiteClock", EVENT_GAME_CAMERA_UI_MODE_CHANGED, OnUICameraModeChanged)
+    EVENT_MANAGER:RegisterForEvent("BiteClock", EVENT_RETICLE_HIDDEN_UPDATE, OnReticleHiddenUpdate)
+
+    -- Unregister to avoid repeating init
+    EVENT_MANAGER:UnregisterForEvent("BiteClock", EVENT_ADD_ON_LOADED)
+    Initialize()
+
 end
 
 -- Put me in coach, im ready to playyy
