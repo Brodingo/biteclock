@@ -197,8 +197,11 @@ local function Initialize()
                 local cooldownRemaining = biteCooldown - currentTime
                 local days, hours, minutes, seconds = FormatTime(cooldownRemaining)
 
-                -- Could add player setting to choose short/long format
-                BiteClockWindowLabel:SetText(string.format("Bite ready in %s, %s, %s, %s", days, hours, minutes, seconds))
+                if BiteClock.savedVariables.timeFormat == "short" then
+                    BiteClockWindowLabel:SetText(string.format("Ready in %dd %dh %dm %ds", days, hours, minutes, seconds))
+                else
+                    BiteClockWindowLabel:SetText(string.format("Bite ready in %s, %s, %s, %s", days, hours, minutes, seconds))
+                end
 
             end
         end
