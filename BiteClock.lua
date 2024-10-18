@@ -10,14 +10,17 @@ local BITECLOCK_VARS = {
     vampire = {
         skillId = 5,
         passiveName = "Blood Ritual",
-        icon = "/esoui/art/icons/passive_u26_vampire_05.dds"
-        },
+        icon = "/esoui/art/icons/passive_u26_vampire_05.dds",
+        color = {255,45,255,1},
+    },
     werewolf = {
         skillId = 6,
         passiveName = "Bloodmoon",
-        icon = "/esoui/art/icons/ability_werewolf_008.dds"
+        icon = "/esoui/art/icons/ability_werewolf_008.dds",
+        color = {255,165,0,1},
     }
 }
+
 
 -- Save window position
 local function SavePosition()
@@ -153,9 +156,6 @@ end
 local function Initialize()
     -- d("BiteClock Init")
 
-    -- d("Check buffs")
-    -- CheckBuffs()
-
     -- Determine what kind of player we're dealing with (may change during gameplay)
     local playerType = GetPlayerType()
     -- d("Player Type: " .. playerType)
@@ -168,12 +168,13 @@ local function Initialize()
     else
         -- Set the icon to the appropriate bite passive icon
         BiteClockWindowIcon:SetTexture(BITECLOCK_VARS[playerType].icon)
+        BiteClockWindowLabel:SetColor(unpack(BITECLOCK_VARS[playerType].color))
 
         -- For valid players, check if they have the bite skill unlocked first
         local hasBiteSkill = CheckBiteSkill(playerType)
 
         if not hasBiteSkill then
-            BiteClockWindowLabel:SetText("Bite not unlocked")
+            BiteClockWindowLabel:SetText("Bite skill not unlocked")
         else
             -- d("Player has bite unlocked: ".. tostring(hasBiteSkill))
 
@@ -199,9 +200,12 @@ local function Initialize()
 
                 if BiteClock.savedVariables.timeFormat == "short" then
                     BiteClockWindowLabel:SetText(string.format("Ready in %dd %dh %dm %ds", days, hours, minutes, seconds))
+                    BiteClockWindow:SetWidth(220)
                 else
                     BiteClockWindowLabel:SetText(string.format("Bite ready in %s, %s, %s, %s", days, hours, minutes, seconds))
+                    BiteClockWindow:SetWidth(420)
                 end
+
 
             end
         end
@@ -228,6 +232,7 @@ end
 -- Slash command to change formats
 local function LongFormat()
     BiteClock.savedVariables.timeFormat = "long"
+    BiteClockWindow:SetWidth(420)
 end
 
 -- Hide and show on pause/unpause
