@@ -54,7 +54,7 @@ end
 
 -- Check if the player has the given skill line unlocked
 local function CheckSkillLine(skillType, skillLineIndex)
-    local name, level, xp, _, _, _ = GetSkillLineInfo(skillType, skillLineIndex)
+    local name, rank, xp, _, _, _ = GetSkillLineInfo(skillType, skillLineIndex)
     -- d("Name: "..tostring(name))
     -- d("Level: "..tostring(level))
     -- d("XP: "..tostring(xp))
@@ -65,7 +65,7 @@ end
 -- Check what kind of player we're dealing with
 local function GetPlayerType()
     -- Check if playerType is already saved in the saved variables
-    if false and BiteClock.savedVariables.playerType and BiteClock.savedVariables.playerType ~= "normal" then
+    if BiteClock.savedVariables.playerType and BiteClock.savedVariables.playerType ~= "normal" then
         return BiteClock.savedVariables.playerType
     end
 
