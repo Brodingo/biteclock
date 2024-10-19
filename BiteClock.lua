@@ -21,7 +21,6 @@ local BITECLOCK_VARS = {
     }
 }
 
-
 -- Save window position
 local function SavePosition()
     local left, top = BiteClockWindow:GetLeft(), BiteClockWindow:GetTop()
@@ -55,18 +54,18 @@ end
 
 -- Check if the player has the given skill line unlocked
 local function CheckSkillLine(skillType, skillLineIndex)
-    local name, rank, xp, xpForNextRank, available, leveled = GetSkillLineInfo(skillType, skillLineIndex)
-    
-    -- Need to fix variable names, they appear out of order compared to example
+    local name, level, xp, _, _, _ = GetSkillLineInfo(skillType, skillLineIndex)
+    -- d("Name: "..tostring(name))
+    -- d("Level: "..tostring(level))
+    -- d("XP: "..tostring(xp))
+
     return xp
-    
 end
 
 -- Check what kind of player we're dealing with
 local function GetPlayerType()
-
     -- Check if playerType is already saved in the saved variables
-    if BiteClock.savedVariables.playerType and BiteClock.savedVariables.playerType ~= "normal" then
+    if false and BiteClock.savedVariables.playerType and BiteClock.savedVariables.playerType ~= "normal" then
         return BiteClock.savedVariables.playerType
     end
 
@@ -101,36 +100,41 @@ end
 local function CheckBiteCooldown(playerType)
     local lastTimeEnding = BiteClock.savedVariables.lastTimeEnding
     local currentTime = GetFrameTimeSeconds()
-
+    
     -- Check for an existing last bite cooldown
     if lastTimeEnding then
-        -- If enough time has passed clear it out
-        if currentTime > lastTimeEnding then
+        local timeRemaining = lastTimeEnding - currentTime
+
+        -- If enough time has passed clear the last bite cooldown timer
+        if timeRemaining <= 0 then
             BiteClock.savedVariables.lastTimeEnding = nil
-            return false
         -- Otherwise return the last cooldown
         else
-            return lastTimeEnding
-        end
-
-    else
-        local numBuffs = GetNumBuffs("player")
-        local cooldownName = BITECLOCK_VARS[playerType].passiveName.." Cooldown"
-    
-        for i = 1, numBuffs do
-            local buffName, timeStarted, timeEnding, buffSlot, stackCount, iconFilename, buffType, effectType, abilityType, statusEffectType, abilityId, canClickOff, castByPlayer = GetUnitBuffInfo("player", i)
-
-            if buffName == cooldownName then
-                -- d(cooldownName.." Found")
-                -- Save the timeEnding
-                BiteClock.savedVariables.lastTimeEnding = timeEnding
-                return BiteClock.savedVariables.lastTimeEnding
-            end
+            -- d("using savedvars time")
+            return timeRemaining
         end
     end
 
-    return false
+    -- If a bite is not saved check for a new one
+    local numBuffs = GetNumBuffs("player")
+    local cooldownName = BITECLOCK_VARS[playerType].passiveName.." Cooldown"
+
+    for i = 1, numBuffs do
+        local buffName, timeStarted, timeEnding, buffSlot, stackCount, iconFilename, buffType, effectType, abilityType, statusEffectType, abilityId, canClickOff, castByPlayer = GetUnitBuffInfo("player", i)
+
+        if buffName == cooldownName then
+            -- d(cooldownName.." Found")
+            -- d("Time started: "..timeStarted)
+            -- d("Time ending: "..timeEnding)
+            -- d("Current started: "..currentTime)
+            -- Save the timeEnding
+            BiteClock.savedVariables.lastTimeEnding = timeEnding - currentTime
+            return timeEnding - currentTime
+        end
+    end
+
     -- d("No Blood Ritual cooldown active.")
+    return false
 end
 
 -- Make the cooldown remaining time easier to read
@@ -232,7 +236,6 @@ end
 -- Slash command to change formats
 local function LongFormat()
     BiteClock.savedVariables.timeFormat = "long"
-    BiteClockWindow:SetWidth(420)
 end
 
 -- Hide and show on pause/unpause
