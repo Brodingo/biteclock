@@ -102,7 +102,10 @@ local function CheckBiteCooldown(playerType)
     local currentTime = GetFrameTimeSeconds()
     
     -- Check for an existing last bite cooldown
-    if lastTimeEnding then
+    -- Disable for now since timeending shifts (daily?)
+    -- Need to find a better way to track cooldown regardless of start
+    -- Maybe determine a timestamp instead
+    if false and lastTimeEnding then
         local timeRemaining = lastTimeEnding - currentTime
 
         -- If enough time has passed clear the last bite cooldown timer
