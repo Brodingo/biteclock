@@ -160,6 +160,23 @@ local function FormatTime(seconds)
     return pluralize(days, "day"), pluralize(hours, "hour"), pluralize(minutes, "minute"), pluralize(seconds, "second")
 end
 
+local function UpdateWindow()
+
+    if BiteClock.savedVariables.windowToggle == "hide" then
+        BiteClockWindow:SetHidden(true)
+        return
+    else
+        BiteClockWindow:SetHidden(false)
+    end
+
+    if BiteClock.savedVariables.timeFormat == "short" then
+        BiteClockWindow:SetWidth(220)
+    else
+        BiteClockWindow:SetWidth(420)
+    end
+
+end
+
 local function Initialize()
     -- d("BiteClock Init")
 
@@ -207,10 +224,8 @@ local function Initialize()
 
                 if BiteClock.savedVariables.timeFormat == "short" then
                     BiteClockWindowLabel:SetText(string.format("Ready in %dd %dh %dm %ds", days, hours, minutes, seconds))
-                    BiteClockWindow:SetWidth(220)
                 else
                     BiteClockWindowLabel:SetText(string.format("Bite ready in %s, %s, %s, %s", days, hours, minutes, seconds))
-                    BiteClockWindow:SetWidth(420)
                 end
 
 
@@ -218,18 +233,20 @@ local function Initialize()
         end
     end
 
+    -- Update window with any new settings
+    UpdateWindow()
+
     -- Refresh checks, to check if player gets skill line, passive ability or when tracking cooldown
     zo_callLater(function() Initialize() end, 1000)
 end
 
 -- Slash command to hide UI
 local function HideWindow()
-    BiteClockWindow:SetHidden(true)
+    BiteClock.savedVariables.windowToggle = "hide"
 end
-
 -- Slash command to show UI
 local function ShowWindow()
-    BiteClockWindow:SetHidden(false)
+    BiteClock.savedVariables.windowToggle = "show"
 end
 
 -- Slash command to change formats

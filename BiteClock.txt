@@ -1,6 +1,6 @@
 ## Title: BiteClock
 ## Author: @Brodingo
-## APIVersion: 101043
+## APIVersion: 101044
 ## SavedVariables: BiteClockData
 
 BiteClock.lua
