@@ -163,10 +163,7 @@ end
 local function UpdateWindow()
 
     if BiteClock.savedVariables.windowToggle == "hide" then
-        BiteClockWindow:SetHidden(true)
         return
-    else
-        BiteClockWindow:SetHidden(false)
     end
 
     if BiteClock.savedVariables.timeFormat == "short" then
@@ -243,10 +240,12 @@ end
 -- Slash command to hide UI
 local function HideWindow()
     BiteClock.savedVariables.windowToggle = "hide"
+    BiteClockWindow:SetHidden(true)
 end
 -- Slash command to show UI
 local function ShowWindow()
     BiteClock.savedVariables.windowToggle = "show"
+    BiteClockWindow:SetHidden(false)
 end
 
 -- Slash command to change formats
@@ -264,6 +263,11 @@ local function IsGameMenuOpen()
 end
 
 local function OnUICameraModeChanged(eventCode, uiMode)
+
+    if BiteClock.savedVariables.windowToggle == "hide" then
+        return
+    end
+
     if uiMode then
         -- d("UI mode activated - hiding BiteClockWindow")
         BiteClockWindow:SetHidden(true)
@@ -274,6 +278,11 @@ local function OnUICameraModeChanged(eventCode, uiMode)
 end
 
 local function OnReticleHiddenUpdate(eventCode, hidden)
+
+    if BiteClock.savedVariables.windowToggle == "hide" then
+        return
+    end
+
     if hidden and not IsGameMenuOpen() then
         -- d("Reticle hidden (not game menu) - hiding BiteClockWindow")
         BiteClockWindow:SetHidden(true)
@@ -303,6 +312,11 @@ function BiteClock.OnAddOnLoaded(eventCode, addonName)
 
     -- Restore position when addon loads
     RestorePosition()
+
+    -- Restore visible toggle when addon loads
+    if BiteClock.savedVariables.windowToggle == "hide" then
+        BiteClockWindow:SetHidden(true)
+    end
 
     -- Hide and show on pause/unpause
     EVENT_MANAGER:RegisterForEvent("BiteClock", EVENT_GAME_CAMERA_UI_MODE_CHANGED, OnUICameraModeChanged)
