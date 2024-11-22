@@ -18,6 +18,10 @@ local BITECLOCK_VARS = {
         passiveName = "Bloodmoon",
         icon = "/esoui/art/icons/ability_werewolf_008.dds",
         color = {255,165,0,1},
+    },
+    formatWidth = {
+        short = 220,
+        long = 420,
     }
 }
 
@@ -137,7 +141,11 @@ local function CheckBiteCooldown(playerType)
     end
 
     -- d("No Blood Ritual cooldown active.")
-    return false
+    return nil
+end
+
+local function pluralize(value, unit)
+    return value == 1 and (value .. " " .. unit) or (value .. " " .. unit .. "s")
 end
 
 -- Make the cooldown remaining time easier to read
@@ -153,25 +161,19 @@ local function FormatTime(seconds)
         return days, hours, minutes, seconds
     end
 
-    local function pluralize(value, unit)
-        return value == 1 and (value .. " " .. unit) or (value .. " " .. unit .. "s")
-    end
-
     return pluralize(days, "day"), pluralize(hours, "hour"), pluralize(minutes, "minute"), pluralize(seconds, "second")
 end
 
-local function UpdateWindow()
-
+local function UpdateWindow(biteCooldown)
     if BiteClock.savedVariables.windowToggle == "hide" then
         return
     end
-
-    if BiteClock.savedVariables.timeFormat == "short" then
-        BiteClockWindow:SetWidth(220)
-    else
-        BiteClockWindow:SetWidth(420)
+    if biteCooldown == nil then
+        BiteClockWindow:SetWidth(BITECLOCK_VARS.formatWidth.short)
+        return
     end
-
+    local format = BiteClock.savedVariables.timeFormat
+    BiteClockWindow:SetWidth(BITECLOCK_VARS.formatWidth[format ~= nil and format or "long"])
 end
 
 local function Initialize()
@@ -179,6 +181,7 @@ local function Initialize()
 
     -- Determine what kind of player we're dealing with (may change during gameplay)
     local playerType = GetPlayerType()
+    local biteCooldown = nil
     -- d("Player Type: " .. playerType)
 
     -- For normies, just show a message
@@ -200,10 +203,10 @@ local function Initialize()
             -- d("Player has bite unlocked: ".. tostring(hasBiteSkill))
 
             -- If the player has the bite unlocked then check the cooldown
-            local biteCooldown = CheckBiteCooldown(playerType)
+            biteCooldown = CheckBiteCooldown(playerType)
 
             -- Bite is ready!
-            if not biteCooldown then
+            if biteCooldown == nil then
                 -- If no cooldown show an exciting message about bite being READY :D
                 -- d(playerType .. " bite available!")
                 BiteClockWindowLabel:SetText("Bite available!")
@@ -225,13 +228,12 @@ local function Initialize()
                     BiteClockWindowLabel:SetText(string.format("Bite ready in %s, %s, %s, %s", days, hours, minutes, seconds))
                 end
 
-
             end
         end
     end
 
     -- Update window with any new settings
-    UpdateWindow()
+    UpdateWindow(biteCooldown)
 
     -- Refresh checks, to check if player gets skill line, passive ability or when tracking cooldown
     zo_callLater(function() Initialize() end, 1000)
