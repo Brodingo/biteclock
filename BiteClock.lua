@@ -6,22 +6,24 @@ BiteClock.defaultSettings = {
 }
 BiteClock.savedVariables = {}
 
+local PlayerType = { VAMPIRE = "vampire", WEREWOLF = "werewolf", NORMAL = "normal" }
+local FormatWidth = { SHORT = "short", LONG = "long" }
 local BITECLOCK_VARS = {
-    vampire = {
+    [PlayerType.VAMPIRE] = {
         skillId = 5,
         passiveName = "Blood Ritual",
         icon = "/esoui/art/icons/passive_u26_vampire_05.dds",
         color = {255,45,255,1},
     },
-    werewolf = {
+    [PlayerType.WEREWOLF] = {
         skillId = 6,
         passiveName = "Bloodmoon",
         icon = "/esoui/art/icons/ability_werewolf_008.dds",
         color = {255,165,0,1},
     },
     formatWidth = {
-        short = 220,
-        long = 420,
+        [FormatWidth.SHORT] = 220,
+        [FormatWidth.LONG] = 420,
     }
 }
 
@@ -69,16 +71,16 @@ end
 -- Check what kind of player we're dealing with
 local function GetPlayerType()
     -- Check if playerType is already saved in the saved variables
-    if BiteClock.savedVariables.playerType and BiteClock.savedVariables.playerType ~= "normal" then
+    if BiteClock.savedVariables.playerType and BiteClock.savedVariables.playerType ~= PlayerType.NORMAL then
         return BiteClock.savedVariables.playerType
     end
 
     if CheckSkillLine(SKILL_TYPE_WORLD, BITECLOCK_VARS.vampire.skillId) then
-        BiteClock.savedVariables.playerType = "vampire"
+        BiteClock.savedVariables.playerType = PlayerType.VAMPIRE
     elseif CheckSkillLine(SKILL_TYPE_WORLD, BITECLOCK_VARS.werewolf.skillId) then
-        BiteClock.savedVariables.playerType = "werewolf"
+        BiteClock.savedVariables.playerType = PlayerType.WEREWOLF
     else
-        BiteClock.savedVariables.playerType = "normal"
+        BiteClock.savedVariables.playerType = PlayerType.NORMAL
     end
 
     return BiteClock.savedVariables.playerType
@@ -157,7 +159,7 @@ local function FormatTime(seconds)
     local minutes = math.floor(seconds / 60)
     seconds = math.floor(seconds % 60)
 
-    if BiteClock.savedVariables.timeFormat == "short" then
+    if BiteClock.savedVariables.timeFormat == BITECLOCK_VARS.formatWidth.SHORT then
         return days, hours, minutes, seconds
     end
 
@@ -185,7 +187,7 @@ local function Initialize()
     -- d("Player Type: " .. playerType)
 
     -- For normies, just show a message
-    if playerType == "normal" then
+    if playerType == PlayerType.NORMAL then
         BiteClockWindowLabel:SetText("Not a vampire/werewolf")
         -- BiteClockWindow:SetHidden(true)
     -- Player is vampire or werewolf so check for passive and cooldown
@@ -222,7 +224,7 @@ local function Initialize()
                 local cooldownRemaining = biteCooldown - currentTime
                 local days, hours, minutes, seconds = FormatTime(cooldownRemaining)
 
-                if BiteClock.savedVariables.timeFormat == "short" then
+                if BiteClock.savedVariables.timeFormat == FormatWidth.SHORT then
                     BiteClockWindowLabel:SetText(string.format("Ready in %dd %dh %dm %ds", days, hours, minutes, seconds))
                 else
                     BiteClockWindowLabel:SetText(string.format("Bite ready in %s, %s, %s, %s", days, hours, minutes, seconds))
