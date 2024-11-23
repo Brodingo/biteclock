@@ -159,7 +159,7 @@ local function FormatTime(seconds)
     local minutes = math.floor(seconds / 60)
     seconds = math.floor(seconds % 60)
 
-    if BiteClock.savedVariables.timeFormat == BITECLOCK_VARS.formatWidth.SHORT then
+    if BiteClock.savedVariables.timeFormat == FormatWidth.SHORT then
         return days, hours, minutes, seconds
     end
 
