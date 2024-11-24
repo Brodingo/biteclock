@@ -181,6 +181,10 @@ end
 local function Initialize()
     -- d("BiteClock Init")
 
+    -- Show the zone so we can provide info about shrine availability later
+    local currentZone = GetUnitZone("player")
+    d("Current Zone: " .. currentZone)
+
     -- Determine what kind of player we're dealing with (may change during gameplay)
     local playerType = GetPlayerType()
     local biteCooldown = nil
