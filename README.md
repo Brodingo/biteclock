@@ -19,6 +19,12 @@ Copy directory to your ESO add-ons folder:
 | `/biteclockreset` | Reset the window position |
 | `/biteclockshort` `/biteclocklong` | Set the format for the cooldown timer |
 
+## Roadmap
+- Account wide, track cooldowns across characters
+- Zone assist, find a shrine to bite or get bitten
+- Bite request, a means for players to request or fulfill bites
+
 ## Acknowledgements
 * [Great intro to ESO add-ons](https://www.youtube.com/watch?v=ZYsr5pVqhso) by [@moshulu](https://github.com/moshulu)
 * [DebugLogViewer by sirinsidiator](https://www.esoui.com/downloads/info2389-DebugLogViewer.html)
+
