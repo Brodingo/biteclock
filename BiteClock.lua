@@ -26,6 +26,17 @@ local BITECLOCK_VARS = {
         [FormatWidth.LONG] = 420,
     }
 }
+local ShrineZones = {"Reaper's March", "Bangkorai", "The Rift"}
+
+local function PlayerInShrineZone()
+    local playerZone = GetUnitZone("player")
+    for index, value in ipairs(ShrineZones) do
+        if playerZone == value then
+            return true
+        end 
+    end
+    return false
+end
 
 -- Save window position
 local function SavePosition()
@@ -182,8 +193,10 @@ local function Initialize()
     -- d("BiteClock Init")
 
     -- Show the zone so we can provide info about shrine availability later
-    local currentZone = GetUnitZone("player")
-    d("Current Zone: " .. currentZone)
+    -- local currentZone = GetUnitZone("player")
+    -- d("Current Zone: " .. currentZone)
+    -- local BiteableZone = PlayerInShrineZone()
+    -- d("Player is in shrine zone: " .. tostring(BiteableZone))
 
     -- Determine what kind of player we're dealing with (may change during gameplay)
     local playerType = GetPlayerType()
