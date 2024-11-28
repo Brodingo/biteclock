@@ -6,6 +6,10 @@ Add-on for Elder Scrolls Online
 
 For players that have either Vampire or Werewolf skill trees and want to know when their bite will be available for use.
 
+#### Motivation
+
+This is my first Elder Scrolls Online Module, I wanted to learn how they are created so I started with something I've wanted for myself. In game I like providing werewolf and vampire bites as a means to build community and save others money (since Zenimax offers bites at a premium that I think is too high). I also really enjoy Lua🌜, it feels even simpler than Python. Like, I have to write a function just to check if something is in an array, err.. table? It's quaint and zenlike to code in; it's a good reminder that all things **end**.
+
 ### Installing
 
 Copy directory to your ESO add-ons folder:
@@ -21,6 +25,7 @@ Copy directory to your ESO add-ons folder:
 
 ## Roadmap
 - Account wide, track cooldowns across characters
+- Character planning, pick a track
 - Zone assist, find a shrine to bite or get bitten
 - Bite request, a means for players to request or fulfill bites
 
