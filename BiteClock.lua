@@ -192,20 +192,24 @@ end
 local function Initialize()
     -- d("BiteClock Init")
 
-    -- Show the zone so we can provide info about shrine availability later
-    -- local currentZone = GetUnitZone("player")
-    -- d("Current Zone: " .. currentZone)
-    -- local BiteableZone = PlayerInShrineZone()
-    -- d("Player is in shrine zone: " .. tostring(BiteableZone))
-
     -- Determine what kind of player we're dealing with (may change during gameplay)
     local playerType = GetPlayerType()
-    local biteCooldown = nil
-    -- d("Player Type: " .. playerType)
 
+    -- Show the zone so we can provide info about shrine availability
+    local inShrineZone = PlayerInShrineZone()
+    local shrineInfo = ""
+    local zone = GetUnitZone("player")
+    if inShrineZone == true then
+        shrineInfo = "Shrine in " .. zone
+    else
+        shrineInfo = "No Shrine in" .. zone
+    end
+
+    local biteCooldown = nil
+    
     -- For normies, just show a message
     if playerType == PlayerType.NORMAL then
-        BiteClockWindowLabel:SetText("Not a vampire/werewolf")
+        BiteClockWindowLabel:SetText("Not a vampire/werewolf, "..shrineInfo)
         -- BiteClockWindow:SetHidden(true)
     -- Player is vampire or werewolf so check for passive and cooldown
     else
@@ -228,7 +232,7 @@ local function Initialize()
             if biteCooldown == nil then
                 -- If no cooldown show an exciting message about bite being READY :D
                 -- d(playerType .. " bite available!")
-                BiteClockWindowLabel:SetText("Bite available!")
+                BiteClockWindowLabel:SetText("Bite available! " .. shrineInfo)
                 -- Brighten the icon
                 BiteClockWindowIcon:SetAlpha(1)
             -- Bite is not ready yet, show cooldown
