@@ -4,7 +4,7 @@ Add-on for Elder Scrolls Online
 
 ## Description
 
-For players that have either Vampire or Werewolf skill trees and want to know when their bite will be available for use.
+Provides a countdown timer for players that have either Vampire or Werewolf skill trees and want to know when their bite will be available for use.
 
 #### Motivation
 
