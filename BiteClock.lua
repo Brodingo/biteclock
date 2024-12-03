@@ -26,12 +26,31 @@ local BITECLOCK_VARS = {
         [FormatWidth.LONG] = 420,
     }
 }
-local ShrineZones = {"Reaper's March", "Bangkorai", "The Rift"}
+local ShrineZones = {
+    ["Reaper's March"] = {
+        location = {
+            x = 0.72303998470306,
+            y = 0.25214749574661,
+        }
+    },
+    ["Bangkorai"] = {
+        location = {
+            x = 0,
+            y = 0,
+        }
+    },
+    ["The Rift"] = {
+        location = {
+            x = 0,
+            y = 0,
+        }
+    },
+}
 
 local function PlayerInShrineZone()
     local playerZone = GetUnitZone("player")
-    for index, value in ipairs(ShrineZones) do
-        if playerZone == value then
+    for key, value in pairs(ShrineZones) do
+        if playerZone == key then
             return true
         end 
     end
@@ -194,6 +213,8 @@ local function Initialize()
 
     -- Determine what kind of player we're dealing with (may change during gameplay)
     local playerType = GetPlayerType()
+    local playerLocationX, playerLocationY = GetMapPlayerPosition("player")
+    d("Player Location: X:"..tostring(playerLocationX)..", Y:"..tostring(playerLocationY))
 
     -- Show the zone so we can provide info about shrine availability
     local inShrineZone = PlayerInShrineZone()
