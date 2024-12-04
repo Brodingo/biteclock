@@ -233,7 +233,7 @@ local function Initialize()
     -- Determine what kind of player we're dealing with (may change during gameplay)
     local playerType = GetPlayerType()
     local playerLocationX, playerLocationY = GetMapPlayerPosition("player")
-    d("Player Location: X:"..tostring(playerLocationX)..", Y:"..tostring(playerLocationY))
+    -- d("Player Location: X:"..tostring(playerLocationX)..", Y:"..tostring(playerLocationY))
 
     -- Show the zone so we can provide info about shrine availability
     local inShrineZone = PlayerInShrineZone()
@@ -248,6 +248,7 @@ local function Initialize()
         )
         -- Seems to work almost... jumps around a little but nearly accurate...
         -- Must be an inconsistency with how the player coordinates are represented
+        -- TODO check out the LibGPS library for standardized location info
         shrineInfo = "Shrine in " .. zone .. ", " .. tostring(distance) .. "m away"
 
     else
