@@ -28,22 +28,34 @@ local BITECLOCK_VARS = {
 }
 local ShrineZones = {
     ["Reaper's March"] = {
-        location = {
-            x = 0.72303998470306,
-            y = 0.25214749574661,
-        }
+        [PlayerType.VAMPIRE] = {
+            x = 0,
+            y = 0,
+        },
+        [PlayerType.WEREWOLF] = {
+            x = 0,
+            y = 0,
+        },
     },
     ["Bangkorai"] = {
-        location = {
+        [PlayerType.VAMPIRE] = {
             x = 0,
             y = 0,
-        }
+        },
+        [PlayerType.WEREWOLF] = {
+            x = 0,
+            y = 0,
+        },
     },
     ["The Rift"] = {
-        location = {
+        [PlayerType.VAMPIRE] = {
+            x = 0.72303998470306,
+            y = 0.25214749574661,
+        },
+        [PlayerType.WEREWOLF] = {
             x = 0,
             y = 0,
-        }
+        },
     },
 }
 
@@ -55,6 +67,13 @@ local function PlayerInShrineZone()
         end 
     end
     return false
+end
+
+local function CalculateDistance(x1, y1, x2, y2)
+    local dx = x2 - x1
+    local dy = y2 - y1
+    -- 1000 is an estimate for conversion to meters...
+    return math.ceil(math.sqrt(dx * dx + dy * dy) * 1000) 
 end
 
 -- Save window position
@@ -221,7 +240,16 @@ local function Initialize()
     local shrineInfo = ""
     local zone = GetUnitZone("player")
     if inShrineZone == true then
-        shrineInfo = "Shrine in " .. zone
+        local distance = CalculateDistance(
+            playerLocationX,
+            playerLocationY,
+            ShrineZones[zone][playerType].x,
+            ShrineZones[zone][playerType].y
+        )
+        -- Seems to work almost... jumps around a little but nearly accurate...
+        -- Must be an inconsistency with how the player coordinates are represented
+        shrineInfo = "Shrine in " .. zone .. ", " .. tostring(distance) .. "m away"
+
     else
         shrineInfo = "No Shrine in" .. zone
     end

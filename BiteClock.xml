@@ -5,7 +5,7 @@
             <Dimensions x="420" y="32"/>
             <Anchor point="TOPLEFT" offsetX="15" offsetY="15"/>
             <Controls>
-                <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" />
+                <!-- <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" /> -->
                 <Texture name="$(parent)Icon" textureFile="/esoui/art/icons/placeholder/icon_misc_symbol_01.dds">
                     <Dimensions x="32" y="32" />
                     <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0"/>
