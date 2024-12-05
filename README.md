@@ -8,7 +8,7 @@ Provides a countdown timer for players that have either Vampire or Werewolf skil
 
 #### Motivation
 
-This is my first Elder Scrolls Online add-on, I wanted to learn how they are created so I started with something I've wanted for myself. In game I like providing werewolf and vampire bites as a means to build community and save others money (since Zenimax offers bites at a premium that I think is too high). I've also come to really enjoy Lua🌜, it feels even simpler than Python. Like, I have to write a function just to check if something is in an array, err.. table? It's quaint and zenlike to code in; a good reminder that all things **end**. *A little Lua syntax joke for ya there.*
+This is my first Elder Scrolls Online add-on, I wanted to learn how they are created so I started with something I've wanted for myself. In game I like providing werewolf and vampire bites as a means to build community and save others money (since Zenimax offers bites at a premium that I think is too high). I've also really enjoyed learning Lua🌜. I look forward to using it in other places.
 
 ### Installing
 
