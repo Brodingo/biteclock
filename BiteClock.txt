@@ -2,6 +2,7 @@
 ## Author: @Brodingo
 ## APIVersion: 101044
 ## SavedVariables: BiteClockData
+## DependsOn: LibGPS>=30
 
 BiteClock.lua
 BiteClock.xml

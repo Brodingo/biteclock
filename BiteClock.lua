@@ -49,8 +49,8 @@ local ShrineZones = {
     },
     ["The Rift"] = {
         [PlayerType.VAMPIRE] = {
-            x = 0.72303998470306,
-            y = 0.25214749574661,
+            x = 0.65029799679617,
+            y = 0.33956479697632,
         },
         [PlayerType.WEREWOLF] = {
             x = 0,
@@ -58,6 +58,7 @@ local ShrineZones = {
         },
     },
 }
+local gps = LibGPS3
 
 local function PlayerInShrineZone()
     local playerZone = GetUnitZone("player")
@@ -70,10 +71,11 @@ local function PlayerInShrineZone()
 end
 
 local function CalculateDistance(x1, y1, x2, y2)
-    local dx = x2 - x1
-    local dy = y2 - y1
+    local distance = gps:GetGlobalDistanceInMeters(x1, y1, x2, y2)
+    -- local dx = x2 - x1
+    -- local dy = y2 - y1
     -- 1000 is an estimate for conversion to meters...
-    return math.ceil(math.sqrt(dx * dx + dy * dy) * 1000) 
+    return math.ceil(distance)
 end
 
 -- Save window position
@@ -232,8 +234,11 @@ local function Initialize()
 
     -- Determine what kind of player we're dealing with (may change during gameplay)
     local playerType = GetPlayerType()
-    local playerLocationX, playerLocationY = GetMapPlayerPosition("player")
+    -- local playerLocationX, playerLocationY = GetMapPlayerPosition("player")
     -- d("Player Location: X:"..tostring(playerLocationX)..", Y:"..tostring(playerLocationY))
+    
+    local playerX, playerY = gps:LocalToGlobal(GetMapPlayerPosition("player"))
+    -- d("Player Location: X:"..tostring(playerX)..", Y:"..tostring(playerY))
 
     -- Show the zone so we can provide info about shrine availability
     local inShrineZone = PlayerInShrineZone()
@@ -241,8 +246,8 @@ local function Initialize()
     local zone = GetUnitZone("player")
     if inShrineZone == true then
         local distance = CalculateDistance(
-            playerLocationX,
-            playerLocationY,
+            playerX,
+            playerY,
             ShrineZones[zone][playerType].x,
             ShrineZones[zone][playerType].y
         )
