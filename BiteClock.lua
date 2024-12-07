@@ -53,8 +53,8 @@ local ShrineZones = {
             y = 0.33956479697632,
         },
         [PlayerType.WEREWOLF] = {
-            x = 0,
-            y = 0,
+            x = 0.66078479961658,
+            y = 0.36681839553402,
         },
     },
 }
@@ -238,7 +238,7 @@ local function Initialize()
     -- d("Player Location: X:"..tostring(playerLocationX)..", Y:"..tostring(playerLocationY))
     
     local playerX, playerY = gps:LocalToGlobal(GetMapPlayerPosition("player"))
-    -- d("Player Location: X:"..tostring(playerX)..", Y:"..tostring(playerY))
+    d("Player Location: X:"..tostring(playerX)..", Y:"..tostring(playerY))
 
     -- Show the zone so we can provide info about shrine availability
     local inShrineZone = PlayerInShrineZone()
