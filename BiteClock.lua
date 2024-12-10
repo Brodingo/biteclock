@@ -43,8 +43,8 @@ local ShrineZones = {
             y = 0.32498159559332,
         },
         [PlayerType.WEREWOLF] = {
-            x = 0,
-            y = 0,
+            x = 0.3148992064148,
+            y = 0.31686359614929,
         },
     },
     ["The Rift"] = {
