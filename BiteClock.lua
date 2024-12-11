@@ -33,8 +33,8 @@ local ShrineZones = {
             y = 0,
         },
         [PlayerType.WEREWOLF] = {
-            x = 0,
-            y = 0,
+            x = 0.47906718510934,
+            y = 0.5711256058987,
         },
     },
     ["Bangkorai"] = {
