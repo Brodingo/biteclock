@@ -29,8 +29,8 @@ local BITECLOCK_VARS = {
 local ShrineZones = {
     ["Reaper's March"] = {
         [PlayerType.VAMPIRE] = {
-            x = 0,
-            y = 0,
+            x = 0.47301758463444,
+            y = 0.5728352071255,
         },
         [PlayerType.WEREWOLF] = {
             x = 0.47906718510934,
@@ -75,7 +75,7 @@ local function CalculateDistance(x1, y1, x2, y2)
     -- local dx = x2 - x1
     -- local dy = y2 - y1
     -- 1000 is an estimate for conversion to meters...
-    return math.ceil(distance)
+    return math.floor(distance)
 end
 
 -- Save window position
