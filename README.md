@@ -24,10 +24,10 @@ Copy directory to your ESO add-ons folder:
 | `/biteclockshort` `/biteclocklong` | Set the format for the cooldown timer |
 
 ## Roadmap
-[x] Zone assist, find a shrine to bite or get bitten
-[_] Account wide, track cooldowns across characters
-[_] Character planning, pick a track
-[_] Bite request, a means for players to request or fulfill bites
+- [x] Zone assist, find a shrine to bite or get bitten
+- [ ] Account wide, track cooldowns across characters
+- [ ] Character planning, pick a track
+- [ ] Bite request, a means for players to request or fulfill bites
 
 ## Acknowledgements
 * [Great intro to ESO add-ons](https://www.youtube.com/watch?v=ZYsr5pVqhso) by [@moshulu](https://github.com/moshulu)
