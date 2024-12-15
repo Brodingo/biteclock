@@ -25,8 +25,8 @@ Copy directory to your ESO add-ons folder:
 
 ## Roadmap
 - [x] Zone assist, find a shrine to bite or get bitten
-- [ ] Account wide, track cooldowns across characters
 - [ ] Character planning, pick a track
+- [ ] Account wide, track cooldowns across characters
 - [ ] Bite request, a means for players to request or fulfill bites
 
 ## Acknowledgements
