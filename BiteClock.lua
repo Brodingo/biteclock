@@ -78,6 +78,35 @@ local function CalculateDistance(x1, y1, x2, y2)
     return math.floor(distance)
 end
 
+local function CalculateDirection(x1, y1, x2, y2)
+    local deltaX = x2 - x1
+    local deltaY = y2 - y1
+    local angle = math.atan2(deltaY, deltaX) * (180 / math.pi)
+    
+    if angle < 0 then
+        angle = angle + 360
+    end
+    
+    if (angle >= 337.5 and angle < 360) or (angle >= 0 and angle < 22.5) then
+        return "East"
+    elseif angle >= 22.5 and angle < 67.5 then
+        return "Northeast"
+    elseif angle >= 67.5 and angle < 112.5 then
+        return "North"
+    elseif angle >= 112.5 and angle < 157.5 then
+        return "Northwest"
+    elseif angle >= 157.5 and angle < 202.5 then
+        return "West"
+    elseif angle >= 202.5 and angle < 247.5 then
+        return "Southwest"
+    elseif angle >= 247.5 and angle < 292.5 then
+        return "South"
+    elseif angle >= 292.5 and angle < 337.5 then
+        return "Southeast"
+    end
+    return "Undefined Direction"
+end
+
 -- Save window position
 local function SavePosition()
     local left, top = BiteClockWindow:GetLeft(), BiteClockWindow:GetTop()
@@ -251,10 +280,16 @@ local function Initialize()
             ShrineZones[zone][playerType].x,
             ShrineZones[zone][playerType].y
         )
+        local direction = CalculateDirection(
+            playerX,
+            playerY,
+            ShrineZones[zone][playerType].x,
+            ShrineZones[zone][playerType].y
+        )
         -- Seems to work almost... jumps around a little but nearly accurate...
         -- Must be an inconsistency with how the player coordinates are represented
         -- TODO check out the LibGPS library for standardized location info
-        shrineInfo = "Shrine in " .. zone .. ", " .. tostring(distance) .. "m away"
+        shrineInfo = "Shrine in " .. zone .. ", " .. tostring(distance) .. "m away, " .. direction
 
     else
         shrineInfo = "No Shrine in" .. zone
