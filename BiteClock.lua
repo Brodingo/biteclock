@@ -262,47 +262,45 @@ local function Initialize()
     -- d("BiteClock Init")
 
     -- Determine what kind of player we're dealing with (may change during gameplay)
-    local playerType = GetPlayerType()
-    -- local playerLocationX, playerLocationY = GetMapPlayerPosition("player")
-    -- d("Player Location: X:"..tostring(playerLocationX)..", Y:"..tostring(playerLocationY))
-    
+    local playerType = GetPlayerType()   
     local playerX, playerY = gps:LocalToGlobal(GetMapPlayerPosition("player"))
     d("Player Location: X:"..tostring(playerX)..", Y:"..tostring(playerY))
-
-    -- Show the zone so we can provide info about shrine availability
+    local biteCooldown = nil
     local inShrineZone = PlayerInShrineZone()
     local shrineInfo = ""
     local zone = GetUnitZone("player")
-    if inShrineZone == true then
-        local distance = CalculateDistance(
-            playerX,
-            playerY,
-            ShrineZones[zone][playerType].x,
-            ShrineZones[zone][playerType].y
-        )
-        local direction = CalculateDirection(
-            playerX,
-            playerY,
-            ShrineZones[zone][playerType].x,
-            ShrineZones[zone][playerType].y
-        )
-        -- Seems to work almost... jumps around a little but nearly accurate...
-        -- Must be an inconsistency with how the player coordinates are represented
-        -- TODO check out the LibGPS library for standardized location info
-        shrineInfo = "Shrine in " .. zone .. ", " .. tostring(distance) .. "m away, " .. direction
 
-    else
-        shrineInfo = "No Shrine in" .. zone
-    end
-
-    local biteCooldown = nil
-    
     -- For normies, just show a message
     if playerType == PlayerType.NORMAL then
-        BiteClockWindowLabel:SetText("Not a vampire/werewolf, "..shrineInfo)
-        -- BiteClockWindow:SetHidden(true)
+        BiteClockWindowLabel:SetText("Not a vampire/werewolf")
+    end
+
     -- Player is vampire or werewolf so check for passive and cooldown
-    else
+    if playerType == PlayerType.VAMPIRE or playerType == PlayerType.WEREWOLF then
+
+
+        if inShrineZone == true then
+            local distance = CalculateDistance(
+                playerX,
+                playerY,
+                ShrineZones[zone][playerType].x,
+                ShrineZones[zone][playerType].y
+            )
+            local direction = CalculateDirection(
+                playerX,
+                playerY,
+                ShrineZones[zone][playerType].x,
+                ShrineZones[zone][playerType].y
+            )
+            -- Seems to work almost... jumps around a little but nearly accurate...
+            -- Must be an inconsistency with how the player coordinates are represented
+            -- TODO check out the LibGPS library for standardized location info
+            shrineInfo = "Shrine in " .. zone .. ", " .. tostring(distance) .. "m away, " .. direction
+
+        else
+            shrineInfo = "No Shrine in" .. zone
+        end
+
         -- Set the icon to the appropriate bite passive icon
         BiteClockWindowIcon:SetTexture(BITECLOCK_VARS[playerType].icon)
         BiteClockWindowLabel:SetColor(unpack(BITECLOCK_VARS[playerType].color))
