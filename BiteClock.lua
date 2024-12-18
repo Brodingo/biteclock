@@ -262,9 +262,10 @@ local function Initialize()
     -- d("BiteClock Init")
 
     -- Determine what kind of player we're dealing with (may change during gameplay)
-    local playerType = GetPlayerType()   
-    local playerX, playerY = gps:LocalToGlobal(GetMapPlayerPosition("player"))
-    d("Player Location: X:"..tostring(playerX)..", Y:"..tostring(playerY))
+    local playerType = GetPlayerType()
+    local playerLocalX, playerLocalY = GetMapPlayerPosition("player") 
+    local playerX, playerY = gps:LocalToGlobal(playerLocalX, playerLocalY)
+    -- d("Player Location: X:"..tostring(playerX)..", Y:"..tostring(playerY))
     local biteCooldown = nil
     local inShrineZone = PlayerInShrineZone()
     local shrineInfo = ""
@@ -277,7 +278,6 @@ local function Initialize()
 
     -- Player is vampire or werewolf so check for passive and cooldown
     if playerType == PlayerType.VAMPIRE or playerType == PlayerType.WEREWOLF then
-
 
         if inShrineZone == true then
             local distance = CalculateDistance(
@@ -320,7 +320,7 @@ local function Initialize()
             if biteCooldown == nil then
                 -- If no cooldown show an exciting message about bite being READY :D
                 -- d(playerType .. " bite available!")
-                BiteClockWindowLabel:SetText("Bite available! " .. shrineInfo)
+                BiteClockWindowLabel:SetText("Bite ready! " .. shrineInfo)
                 -- Brighten the icon
                 BiteClockWindowIcon:SetAlpha(1)
             -- Bite is not ready yet, show cooldown
