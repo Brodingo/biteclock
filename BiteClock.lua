@@ -79,8 +79,9 @@ local function CalculateDistance(x1, y1, x2, y2)
 end
 
 local function CalculateDirection(x1, y1, x2, y2)
-    local deltaX = x2 - x1
-    local deltaY = y2 - y1
+    local shrineLocalX, shrineLocalY = gps:GlobalToLocal(x2, y2)
+    local deltaX = x1 - shrineLocalX
+    local deltaY = y1 - shrineLocalY
     local angle = math.atan2(deltaY, deltaX) * (180 / math.pi)
     
     if angle < 0 then
@@ -88,21 +89,21 @@ local function CalculateDirection(x1, y1, x2, y2)
     end
     
     if (angle >= 337.5 and angle < 360) or (angle >= 0 and angle < 22.5) then
-        return "East"
+        return "West"
     elseif angle >= 22.5 and angle < 67.5 then
-        return "Northeast"
+        return "Northwest"
     elseif angle >= 67.5 and angle < 112.5 then
         return "North"
     elseif angle >= 112.5 and angle < 157.5 then
-        return "Northwest"
+        return "Northeast"
     elseif angle >= 157.5 and angle < 202.5 then
-        return "West"
+        return "East"
     elseif angle >= 202.5 and angle < 247.5 then
-        return "Southwest"
+        return "Southeast"
     elseif angle >= 247.5 and angle < 292.5 then
         return "South"
     elseif angle >= 292.5 and angle < 337.5 then
-        return "Southeast"
+        return "Southwest"
     end
     return "Undefined Direction"
 end
@@ -287,8 +288,8 @@ local function Initialize()
                 ShrineZones[zone][playerType].y
             )
             local direction = CalculateDirection(
-                playerX,
-                playerY,
+                playerLocalX,
+                playerLocalY,
                 ShrineZones[zone][playerType].x,
                 ShrineZones[zone][playerType].y
             )
