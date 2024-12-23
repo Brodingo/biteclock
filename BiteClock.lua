@@ -259,95 +259,82 @@ local function UpdateWindow(biteCooldown)
     BiteClockWindow:SetWidth(BITECLOCK_VARS.formatWidth[format ~= nil and format or "long"])
 end
 
-local function Initialize()
-    -- d("BiteClock Init")
+local function GetShrineInfo(zone, playerType, playerX, playerY, playerLocalX, playerLocalY)
+    if not PlayerInShrineZone() then
+        return "No Shrine in " .. zone
+    end
 
-    -- Determine what kind of player we're dealing with (may change during gameplay)
+    local distance = CalculateDistance(
+        playerX,
+        playerY,
+        ShrineZones[zone][playerType].x,
+        ShrineZones[zone][playerType].y
+    )
+    local direction = CalculateDirection(
+        playerLocalX,
+        playerLocalY,
+        ShrineZones[zone][playerType].x,
+        ShrineZones[zone][playerType].y
+    )
+    
+    return "Shrine in " .. zone .. ", " .. tostring(distance) .. "m away, " .. direction
+end
+
+local function HandleNormalPlayer()
+    BiteClockWindowLabel:SetText("Not a vampire/werewolf")
+
+    -- TODO: Add support for tracking a future bite preference
+end
+
+local function HandleSupernatural(playerType, zone, playerX, playerY, playerLocalX, playerLocalY)
+    -- Set appearance
+    BiteClockWindowIcon:SetTexture(BITECLOCK_VARS[playerType].icon)
+    BiteClockWindowLabel:SetColor(unpack(BITECLOCK_VARS[playerType].color))
+
+    -- Check bite skill
+    if not CheckBiteSkill(playerType) then
+        BiteClockWindowLabel:SetText("Bite skill not unlocked")
+        return
+    end
+
+    -- Get shrine info
+    local shrineInfo = GetShrineInfo(zone, playerType, playerX, playerY, playerLocalX, playerLocalY)
+
+    -- Check bite cooldown
+    local biteCooldown = CheckBiteCooldown(playerType)
+
+    if biteCooldown == nil then
+        BiteClockWindowLabel:SetText("Bite ready! " .. shrineInfo)
+        BiteClockWindowIcon:SetAlpha(1)
+    else
+        BiteClockWindowIcon:SetAlpha(0.5)
+        local currentTime = GetFrameTimeSeconds()
+        local cooldownRemaining = biteCooldown - currentTime
+        local days, hours, minutes, seconds = FormatTime(cooldownRemaining)
+
+        if BiteClock.savedVariables.timeFormat == FormatWidth.SHORT then
+            BiteClockWindowLabel:SetText(string.format("Ready in %dd %dh %dm %ds", days, hours, minutes, seconds))
+        else
+            BiteClockWindowLabel:SetText(string.format("Bite ready in %s, %s, %s, %s", days, hours, minutes, seconds))
+        end
+    end
+end
+
+local function Initialize()
     local playerType = GetPlayerType()
     local playerLocalX, playerLocalY = GetMapPlayerPosition("player") 
     local playerX, playerY = gps:LocalToGlobal(playerLocalX, playerLocalY)
-    -- d("Player Location: X:"..tostring(playerX)..", Y:"..tostring(playerY))
-    local biteCooldown = nil
-    local inShrineZone = PlayerInShrineZone()
-    local shrineInfo = ""
     local zone = GetUnitZone("player")
 
-    -- For normies, just show a message
     if playerType == PlayerType.NORMAL then
-        BiteClockWindowLabel:SetText("Not a vampire/werewolf")
+        HandleNormalPlayer()
     end
 
-    -- Player is vampire or werewolf so check for passive and cooldown
     if playerType == PlayerType.VAMPIRE or playerType == PlayerType.WEREWOLF then
-
-        if inShrineZone == true then
-            local distance = CalculateDistance(
-                playerX,
-                playerY,
-                ShrineZones[zone][playerType].x,
-                ShrineZones[zone][playerType].y
-            )
-            local direction = CalculateDirection(
-                playerLocalX,
-                playerLocalY,
-                ShrineZones[zone][playerType].x,
-                ShrineZones[zone][playerType].y
-            )
-            -- Seems to work almost... jumps around a little but nearly accurate...
-            -- Must be an inconsistency with how the player coordinates are represented
-            -- TODO check out the LibGPS library for standardized location info
-            shrineInfo = "Shrine in " .. zone .. ", " .. tostring(distance) .. "m away, " .. direction
-
-        else
-            shrineInfo = "No Shrine in" .. zone
-        end
-
-        -- Set the icon to the appropriate bite passive icon
-        BiteClockWindowIcon:SetTexture(BITECLOCK_VARS[playerType].icon)
-        BiteClockWindowLabel:SetColor(unpack(BITECLOCK_VARS[playerType].color))
-
-        -- For valid players, check if they have the bite skill unlocked first
-        local hasBiteSkill = CheckBiteSkill(playerType)
-
-        if not hasBiteSkill then
-            BiteClockWindowLabel:SetText("Bite skill not unlocked")
-        else
-            -- d("Player has bite unlocked: ".. tostring(hasBiteSkill))
-
-            -- If the player has the bite unlocked then check the cooldown
-            biteCooldown = CheckBiteCooldown(playerType)
-
-            -- Bite is ready!
-            if biteCooldown == nil then
-                -- If no cooldown show an exciting message about bite being READY :D
-                -- d(playerType .. " bite available!")
-                BiteClockWindowLabel:SetText("Bite ready! " .. shrineInfo)
-                -- Brighten the icon
-                BiteClockWindowIcon:SetAlpha(1)
-            -- Bite is not ready yet, show cooldown
-            else
-                -- Dim the icon
-                BiteClockWindowIcon:SetAlpha(0.5)
-                -- If the cooldown is active display the countdown
-                local currentTime = GetFrameTimeSeconds()
-                -- d("Current Time: " .. currentTime)
-                local cooldownRemaining = biteCooldown - currentTime
-                local days, hours, minutes, seconds = FormatTime(cooldownRemaining)
-
-                if BiteClock.savedVariables.timeFormat == FormatWidth.SHORT then
-                    BiteClockWindowLabel:SetText(string.format("Ready in %dd %dh %dm %ds", days, hours, minutes, seconds))
-                else
-                    BiteClockWindowLabel:SetText(string.format("Bite ready in %s, %s, %s, %s", days, hours, minutes, seconds))
-                end
-
-            end
-        end
+        HandleSupernatural(playerType, zone, playerX, playerY, playerLocalX, playerLocalY)
     end
 
-    -- Update window with any new settings
-    UpdateWindow(biteCooldown)
-
-    -- Refresh checks, to check if player gets skill line, passive ability or when tracking cooldown
+    UpdateWindow(CheckBiteCooldown(playerType))
     zo_callLater(function() Initialize() end, 1000)
 end
 
