@@ -185,6 +185,11 @@ end
 
 -- Checks for the bite cool down and returns remaining time
 local function CheckBiteCooldown(playerType)
+
+    if playerType == PlayerType.NORMAL then
+        return nil
+    end
+
     local lastTimeEnding = BiteClock.savedVariables.lastTimeEnding
     local currentTime = GetFrameTimeSeconds()
     
