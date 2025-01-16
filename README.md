@@ -14,7 +14,8 @@ This is my first Elder Scrolls Online add-on, I wanted to learn how they are cre
 
 Copy directory to your ESO add-ons folder:
 
-📂`C:\Users\<username>\Documents\Elder Scrolls Online\live\AddOns`
+Win 📂`C:\Users\<username>\Documents\Elder Scrolls Online\live\AddOns`\
+Mac 📂`~/Documents/Elder Scrolls Online/live/AddOns/`
 
 ### Slash Commands
 | Command | Description |
