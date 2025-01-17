@@ -29,6 +29,8 @@ Mac 📂`~/Documents/Elder Scrolls Online/live/AddOns/`
 - [ ] Character planning, pick a track
 - [ ] Account wide, track cooldowns across characters
 - [ ] Bite request, a means for players to request or fulfill bites
+- [ ] Settings menu for certain slash commands
+- [ ] Localization
 
 ## Acknowledgements
 * [Great intro to ESO add-ons](https://www.youtube.com/watch?v=ZYsr5pVqhso) by [@moshulu](https://github.com/moshulu)

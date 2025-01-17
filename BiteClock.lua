@@ -5,7 +5,7 @@ BiteClock.defaultSettings = {
     top = 15,
 }
 BiteClock.savedVariables = {}
-
+local gps = LibGPS3
 local PlayerType = { VAMPIRE = "vampire", WEREWOLF = "werewolf", NORMAL = "normal" }
 local FormatWidth = { SHORT = "short", LONG = "long" }
 local BITECLOCK_VARS = {
@@ -21,10 +21,10 @@ local BITECLOCK_VARS = {
         icon = "/esoui/art/icons/ability_werewolf_008.dds",
         color = {255,165,0,1},
     },
-    formatWidth = {
-        [FormatWidth.SHORT] = 220,
-        [FormatWidth.LONG] = 420,
-    }
+    -- formatWidth = {
+    --     [FormatWidth.SHORT] = 220,
+    --     [FormatWidth.LONG] = 420,
+    -- }
 }
 local ShrineZones = {
     ["Reaper's March"] = {
@@ -58,7 +58,6 @@ local ShrineZones = {
         },
     },
 }
-local gps = LibGPS3
 
 local function PlayerInShrineZone()
     local playerZone = GetUnitZone("player")
@@ -125,13 +124,20 @@ local function RestorePosition()
     -- d("Restored Position: " .. left .. ", " .. top)
 end
 
--- Reset window position
-local function ResetPosition()
+-- Reset BiteClock saved variables
+local function Reset()
+    
     BiteClock.savedVariables.left = BiteClock.defaultSettings.left
     BiteClock.savedVariables.top = BiteClock.defaultSettings.top
+    BiteClock.savedVariables.desire = nil
+    BiteClock.savedVariables.playerType = nil
+    BiteClock.savedVariables.windowToggle = nil
+    BiteClock.savedVariables.timeFormat = nil
+
+    d("BiteClock variables reset")
+    
     RestorePosition()
     BiteClockWindow:SetHidden(false)
-    -- d("Position reset to default and window shown")
 end
 
 -- Save position when moving the window
@@ -257,11 +263,11 @@ local function UpdateWindow(biteCooldown)
         return
     end
     if biteCooldown == nil then
-        BiteClockWindow:SetWidth(BITECLOCK_VARS.formatWidth.short)
+        -- BiteClockWindow:SetWidth(BITECLOCK_VARS.formatWidth.short)
         return
     end
     local format = BiteClock.savedVariables.timeFormat
-    BiteClockWindow:SetWidth(BITECLOCK_VARS.formatWidth[format ~= nil and format or "long"])
+    -- BiteClockWindow:SetWidth(BITECLOCK_VARS.formatWidth[format ~= nil and format or "long"])
 end
 
 local function GetShrineInfo(zone, playerType, playerX, playerY, playerLocalX, playerLocalY)
@@ -325,24 +331,6 @@ local function HandleSupernatural(playerType, zone, playerX, playerY, playerLoca
     end
 end
 
-local function Initialize()
-    local playerType = GetPlayerType()
-    local playerLocalX, playerLocalY = GetMapPlayerPosition("player") 
-    local playerX, playerY = gps:LocalToGlobal(playerLocalX, playerLocalY)
-    local zone = GetUnitZone("player")
-
-    if playerType == PlayerType.NORMAL then
-        HandleNormalPlayer()
-    end
-
-    if playerType == PlayerType.VAMPIRE or playerType == PlayerType.WEREWOLF then
-        HandleSupernatural(playerType, zone, playerX, playerY, playerLocalX, playerLocalY)
-    end
-
-    UpdateWindow(CheckBiteCooldown(playerType))
-    zo_callLater(function() Initialize() end, 1000)
-end
-
 -- Slash command to hide UI
 local function HideWindow()
     BiteClock.savedVariables.windowToggle = "hide"
@@ -363,13 +351,24 @@ local function LongFormat()
     BiteClock.savedVariables.timeFormat = "long"
 end
 
+-- Slash command to change formats
+local function DesireVampire()
+    BiteClock.savedVariables.desire = PlayerType.VAMPIRE
+    d("The player thirsts for the crimson elixir of life.")
+end
+-- Slash command to change formats
+local function DesireWerewolf()
+    BiteClock.savedVariables.desire = PlayerType.WEREWOLF
+    d("The player yearns for the wild call of the moon.")
+end
+
+
 -- Hide and show on pause/unpause
 local function IsGameMenuOpen()
     return SCENE_MANAGER:IsShowing("hudui") --or SCENE_MANAGER:IsShowing("hud")
 end
 
 local function OnUICameraModeChanged(eventCode, uiMode)
-
     if BiteClock.savedVariables.windowToggle == "hide" then
         return
     end
@@ -384,7 +383,6 @@ local function OnUICameraModeChanged(eventCode, uiMode)
 end
 
 local function OnReticleHiddenUpdate(eventCode, hidden)
-
     if BiteClock.savedVariables.windowToggle == "hide" then
         return
     end
@@ -402,15 +400,13 @@ end
 -- SLASH_COMMANDS["/biteclockinit"] = Initialize
 SLASH_COMMANDS["/biteclockhide"] = HideWindow
 SLASH_COMMANDS["/biteclockshow"] = ShowWindow
-SLASH_COMMANDS["/biteclockreset"] = ResetPosition
 SLASH_COMMANDS["/biteclockshort"] = ShortFormat
 SLASH_COMMANDS["/biteclocklong"] = LongFormat
+SLASH_COMMANDS["/biteclockvamp"] = DesireVampire
+SLASH_COMMANDS["/biteclockww"] = DesireWerewolf
+SLASH_COMMANDS["/biteclockreset"] = Reset
 
--- When the addon is loaded fire the init function
-function BiteClock.OnAddOnLoaded(eventCode, addonName)
-
-    if addonName ~= "BiteClock" then return end
-
+local function initalizeBiteClock()
     BiteClock.savedVariables = ZO_SavedVars:NewCharacterIdSettings("BiteClockData", 1, nil, {})
 
     -- Register to save position on move stop
@@ -419,19 +415,44 @@ function BiteClock.OnAddOnLoaded(eventCode, addonName)
     -- Restore position when addon loads
     RestorePosition()
 
-    -- Restore visible toggle when addon loads
-    if BiteClock.savedVariables.windowToggle == "hide" then
-        BiteClockWindow:SetHidden(true)
-    end
-
     -- Hide and show on pause/unpause
     EVENT_MANAGER:RegisterForEvent("BiteClock", EVENT_GAME_CAMERA_UI_MODE_CHANGED, OnUICameraModeChanged)
     EVENT_MANAGER:RegisterForEvent("BiteClock", EVENT_RETICLE_HIDDEN_UPDATE, OnReticleHiddenUpdate)
 
+    -- Restore visible toggle when addon loads
+    if BiteClock.savedVariables.windowToggle == "hide" then
+        BiteClockWindow:SetHidden(true)
+    end
+end
+
+-- Main function to check for bite updates
+local function biteClock()
+    local playerType = GetPlayerType()
+    local playerLocalX, playerLocalY = GetMapPlayerPosition("player") 
+    local playerX, playerY = gps:LocalToGlobal(playerLocalX, playerLocalY)
+    local zone = GetUnitZone("player")
+
+    if playerType == PlayerType.NORMAL then
+        HandleNormalPlayer()
+    end
+
+    if playerType == PlayerType.VAMPIRE or playerType == PlayerType.WEREWOLF then
+        HandleSupernatural(playerType, zone, playerX, playerY, playerLocalX, playerLocalY)
+    end
+
+    UpdateWindow(CheckBiteCooldown(playerType))
+    zo_callLater(function() biteClock() end, 1000)
+end
+
+-- When the addon is loaded fire the init function
+function BiteClock.OnAddOnLoaded(eventCode, addonName)
+    if addonName ~= "BiteClock" then return end
+    
     -- Unregister to avoid repeating init
     EVENT_MANAGER:UnregisterForEvent("BiteClock", EVENT_ADD_ON_LOADED)
-    Initialize()
 
+    initalizeBiteClock()
+    biteClock()
 end
 
 -- Put me in coach, im ready to playyy
