@@ -21,8 +21,8 @@ Mac 📂`~/Documents/Elder Scrolls Online/live/AddOns/`
 | Command | Description |
 | --- | --- |
 | `/biteclockhide` `/biteclockshow` | Hide or Show the window |
-| `/biteclockreset` | Reset the window position |
 | `/biteclockshort` `/biteclocklong` | Set the format for the cooldown timer |
+| `/biteclockreset` | Reset all saved variables for the add-on |
 
 ## Roadmap
 - [x] Zone assist, find a shrine to bite or get bitten

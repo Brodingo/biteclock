@@ -26,6 +26,29 @@ local BITECLOCK_VARS = {
     --     [FormatWidth.LONG] = 420,
     -- }
 }
+local FactionZones = {
+    ["Aldmeri"] = {
+        "Auridon",
+        "Grahtwood",
+        "Greenshade",
+        "Malabal Tor",
+        "Reaper's March",
+    },
+    ["Ebonheart"] = {
+        "Stonefalls",
+        "Deshaan",
+        "Shadowfen",
+        "Eastmarch",
+        "The Rift",
+    },
+    ["Daggerfall"] = {
+        "Glenumbra",
+        "Stormhaven",
+        "Rivenspire",
+        "Alik'r Desert",
+        "Bangkorai",
+    }
+}
 local ShrineZones = {
     ["Reaper's March"] = {
         [PlayerType.VAMPIRE] = {
@@ -59,14 +82,28 @@ local ShrineZones = {
     },
 }
 
-local function PlayerInShrineZone()
-    local playerZone = GetUnitZone("player")
-    for key, value in pairs(ShrineZones) do
-        if playerZone == key then
-            return true
-        end 
+local function inTable(tbl, item)
+    for key, valueList in pairs(tbl) do      
+        for _, value in ipairs(valueList) do                
+            if value == item then
+                return true
+            end
+        end
     end
     return false
+end
+
+local function GetFactionByZone(zone)
+    for faction, zoneList in pairs(FactionZones) do
+        if inTable({[faction] = zoneList}, zone) then
+            return faction
+        end
+    end
+    return "Unknown"
+end
+
+local function HasShrine(zone)
+    return inTable(ShrineZones, zone)
 end
 
 local function CalculateDistance(x1, y1, x2, y2)
@@ -271,7 +308,7 @@ local function UpdateWindow(biteCooldown)
 end
 
 local function GetShrineInfo(zone, playerType, playerX, playerY, playerLocalX, playerLocalY)
-    if not PlayerInShrineZone() then
+    if not HasShrine(zone) then
         return "No Shrine in " .. zone
     end
 
@@ -431,6 +468,7 @@ local function biteClock()
     local playerLocalX, playerLocalY = GetMapPlayerPosition("player") 
     local playerX, playerY = gps:LocalToGlobal(playerLocalX, playerLocalY)
     local zone = GetUnitZone("player")
+    -- d("Player alliance: " .. GetFactionByZone(zone))
 
     if playerType == PlayerType.NORMAL then
         HandleNormalPlayer()
