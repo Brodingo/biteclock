@@ -27,7 +27,7 @@ Mac 📂`~/Documents/Elder Scrolls Online/live/AddOns/`
 
 ## Roadmap
 - [x] Zone assist, find a shrine to bite or get bitten
-- [ ] Character planning, pick a track
+- [x] Character planning, pick a track
 - [ ] Account wide, track cooldowns across characters
 - [ ] Bite request, a means for players to request or fulfill bites
 - [ ] Settings menu for certain slash commands
