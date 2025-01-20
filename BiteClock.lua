@@ -304,8 +304,12 @@ local function GetShrineInfo(playerType)
         ShrineZones[zone][playerType].x,
         ShrineZones[zone][playerType].y
     )
-    
-    return "Shrine in " .. zone .. ", " .. tostring(distance) .. "m away, " .. direction
+
+    if distance < 5 then
+        return "Shrine in " .. zone .. ", nearby!"
+    else
+        return "Shrine in " .. zone .. ", " .. tostring(distance) .. "m away, " .. direction
+    end
 end
 
 local function pluralize(value, singular)
@@ -389,6 +393,7 @@ local function HandleSupernatural(playerType, zone, playerX, playerY, playerLoca
     if biteCooldown == nil then
         BiteClockWindowStatus:SetText(BITECLOCK_VARS[playerType].passiveName .. " ready!")
         BiteClockWindowIcon:SetAlpha(1)
+        BiteClockWindowTimer:SetText("Find a willing player to bite...")
     else
         BiteClockWindowStatus:SetText(BITECLOCK_VARS[playerType].passiveName .. " on cooldown")
         BiteClockWindowIcon:SetAlpha(0.5)
