@@ -351,7 +351,6 @@ local function GetCooldownText(biteCooldown)
 end
 
 local function HandleNormalPlayer()
-
     local characterName = GetUnitName("player")
     local desire = BiteClock.savedVariables.desire
     
@@ -364,23 +363,23 @@ local function HandleNormalPlayer()
     end
 
     if (desire ~= nil) then
+        BiteClockWindowTimer:SetText(BITECLOCK_VARS[desire].passiveName .. " unlocks at level 6")
         BiteClockWindowShrine:SetText(GetShrineInfo(desire))
     else
+        BiteClockWindowTimer:SetText("Bite skills unlock at level 6")
         BiteClockWindowShrine:SetText("Set desire with /biteclockvamp or /biteclockww")
     end
 
-    BiteClockWindowTimer:SetText("Bite skills unlock at level 6")
-
 end
 
-local function HandleSupernatural(playerType, zone, playerX, playerY, playerLocalX, playerLocalY)
+local function HandleSupernatural(playerType)
     -- Set appearance
     BiteClockWindowIcon:SetTexture(BITECLOCK_VARS[playerType].icon)
     BiteClockWindowStatus:SetColor(unpack(BITECLOCK_VARS[playerType].color))
 
     -- Check bite skill
     if not CheckBiteSkill(playerType) then
-        BiteClockWindowStatus:SetText("Bite skill not unlocked")
+        BiteClockWindowTimer:SetText(BITECLOCK_VARS[playerType].passiveName .. " unlocks at level 6")
         return
     end
 
@@ -426,12 +425,12 @@ end
 -- Slash command to change formats
 local function DesireVampire()
     BiteClock.savedVariables.desire = PlayerType.VAMPIRE
-    d("The player thirsts for the crimson elixir of life.")
+    -- d("The player thirsts for the crimson elixir of life.")
 end
 -- Slash command to change formats
 local function DesireWerewolf()
     BiteClock.savedVariables.desire = PlayerType.WEREWOLF
-    d("The player yearns for the wild call of the moon.")
+    -- d("The player yearns for the wild call of the moon.")
 end
 
 
