@@ -22,6 +22,7 @@ Mac 📂`~/Documents/Elder Scrolls Online/live/AddOns/`
 | --- | --- |
 | `/biteclockhide` `/biteclockshow` | Hide or Show the window |
 | `/biteclockshort` `/biteclocklong` | Set the format for the cooldown timer |
+| `/biteclockvamp` `/biteclockww`| Set your desired bite for guidance to a shrine |
 | `/biteclockreset` | Reset all saved variables for the add-on |
 
 ## Roadmap
