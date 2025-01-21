@@ -2,6 +2,9 @@
 
 Add-on for Elder Scrolls Online
 
+![Bite clock example for werewolf player](https://raw.githubusercontent.com/Brodingo/biteclock/refs/heads/main/media/bc_example1.jpg)
+![Bite clock example for vampire seeking player](https://raw.githubusercontent.com/Brodingo/biteclock/refs/heads/main/media/bc_example2.jpg)
+
 ## Description
 
 Provides a countdown timer for players that have a Vampire or Werewolf bite skill and want to know when it will be available for use. There is also guidance for finding shrines, which zones they are in and how to locate them. 
