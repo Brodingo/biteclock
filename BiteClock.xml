@@ -2,28 +2,28 @@
 <GuiXml>
     <Controls>
         <TopLevelControl name="BiteClockWindow" movable="true" mouseEnabled="true">
-            <Dimensions x="420" y="92"/>
+            <Dimensions x="420" y="72"/>
             <Anchor point="TOPLEFT" offsetX="15" offsetY="15"/>
             <Controls>
                 <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
                 <Texture name="$(parent)Icon" textureFile="/esoui/art/icons/placeholder/icon_misc_symbol_01.dds">
                     <Dimensions x="32" y="32" />
-                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="30"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="18"/>
                 </Texture>
                 <Label name="$(parent)Status" font="ZoFontGame" color="FFFFFF">
                     <!-- <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" /> -->
                     <Dimensions x="480" y="32" />
-                    <Anchor point="TOPLEFT" relativeTo="$(parent)"  relativePoint="TOPLEFT" offsetX="40" offsetY="3"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)"  relativePoint="TOPLEFT" offsetX="40" offsetY="0"/>
                 </Label>
                 <Label name="$(parent)Timer" font="ZoFontGame" color="FFFFFF">
                     <!-- <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" /> -->
                     <Dimensions x="480" y="32" />
-                    <Anchor point="TOPLEFT" relativeTo="$(parent)"  relativePoint="TOPLEFT" offsetX="40" offsetY="33"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)"  relativePoint="TOPLEFT" offsetX="40" offsetY="24"/>
                 </Label>
                 <Label name="$(parent)Shrine" font="ZoFontGame" color="FFFFFF">
                     <!-- <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" /> -->
                     <Dimensions x="480" y="32" />
-                    <Anchor point="TOPLEFT" relativeTo="$(parent)"  relativePoint="TOPLEFT" offsetX="40" offsetY="63"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)"  relativePoint="TOPLEFT" offsetX="40" offsetY="48"/>
                 </Label>
             </Controls>
         </TopLevelControl>

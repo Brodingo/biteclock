@@ -32,25 +32,26 @@ local FactionZones = {
         "Grahtwood",
         "Greenshade",
         "Malabal Tor",
-        "Reaper's March",
+        shrine = "Reaper's March",
     },
     ["Ebonheart"] = {
         "Stonefalls",
         "Deshaan",
         "Shadowfen",
         "Eastmarch",
-        "The Rift",
+        shrine = "The Rift",
     },
     ["Daggerfall"] = {
         "Glenumbra",
         "Stormhaven",
         "Rivenspire",
         "Alik'r Desert",
-        "Bangkorai",
+        shrine = "Bangkorai",
     }
 }
 local ShrineZones = {
     ["Reaper's March"] = {
+        faction = "Aldmeri",
         [PlayerType.VAMPIRE] = {
             x = 0.47301758463444,
             y = 0.5728352071255,
@@ -61,6 +62,7 @@ local ShrineZones = {
         },
     },
     ["Bangkorai"] = {
+        faction = "Daggerfall",
         [PlayerType.VAMPIRE] = {
             x = 0.29293640580907,
             y = 0.32498159559332,
@@ -71,6 +73,7 @@ local ShrineZones = {
         },
     },
     ["The Rift"] = {
+        faction = "Ebonheart",
         [PlayerType.VAMPIRE] = {
             x = 0.65029799679617,
             y = 0.33956479697632,
@@ -83,12 +86,19 @@ local ShrineZones = {
 }
 
 local function inTable(tbl, item)
-    return tbl[item] ~= nil
+    for key, value in pairs(tbl) do
+        if value == item then
+            return true
+        elseif type(value) == "table" and inTable(value, item) then
+            return true
+        end
+    end
+    return false
 end
 
 local function GetFactionByZone(zone)
-    for faction, zoneList in pairs(FactionZones) do
-        if inTable({[faction] = zoneList}, zone) then
+    for faction, zones in pairs(FactionZones) do
+        if inTable(zones, zone) then
             return faction
         end
     end
@@ -96,7 +106,7 @@ local function GetFactionByZone(zone)
 end
 
 local function HasShrine(zone)
-    return inTable(ShrineZones, zone)
+    return ShrineZones[zone] ~= nil
 end
 
 local function CalculateDistance(x1, y1, x2, y2)
@@ -284,10 +294,15 @@ local function GetShrineInfo(playerType)
     local playerLocalX, playerLocalY = GetMapPlayerPosition("player") 
     local playerX, playerY = gps:LocalToGlobal(playerLocalX, playerLocalY)
     local zone = GetUnitZone("player")
+    local faction = GetFactionByZone(zone)
     -- d("Zone: " .. zone)
+    -- d("Faction: " .. faction)
 
-    if not HasShrine(zone) then
-        return "No Shrine in " .. zone
+    -- If the player is not in a shrine zone
+    if faction == "Unknown" then
+        return "No shrine in " .. zone .. ", seek the factions in Tamriel"
+    elseif not HasShrine(zone) and inTable(FactionZones[faction], zone) then
+        return "No Shrine in " .. zone .. ", visit " .. FactionZones[faction].shrine
     end
 
     -- Calculate distance to the shrine with global coordinates
@@ -305,7 +320,8 @@ local function GetShrineInfo(playerType)
         ShrineZones[zone][playerType].y
     )
 
-    if distance < 5 then
+    -- Display the distance and direction to the shrine
+    if distance < 10 then
         return "Shrine in " .. zone .. ", nearby!"
     else
         return "Shrine in " .. zone .. ", " .. tostring(distance) .. "m away, " .. direction
@@ -316,7 +332,7 @@ local function pluralize(value, singular)
     return value .. " " .. singular .. (value == 1 and "" or "s")
 end
 
--- Make the cooldown remaining time easier to read
+-- Format time into days, hours, minutes, seconds
 local function FormatTime(seconds)
     local days = math.floor(seconds / 86400)
     seconds = seconds % 86400
@@ -324,10 +340,11 @@ local function FormatTime(seconds)
     seconds = seconds % 3600
     local minutes = math.floor(seconds / 60)
     seconds = math.floor(seconds % 60)
-
+    
     return days, hours, minutes, seconds
 end
 
+-- Make the cooldown remaining time easier to read
 local function GetCooldownText(biteCooldown)
     local currentTime = GetFrameTimeSeconds()
     local cooldownRemaining = biteCooldown - currentTime
@@ -335,12 +352,14 @@ local function GetCooldownText(biteCooldown)
 
     local timeStrings = {}
 
+    -- Short format ex: 1d 2h 3m 4s
     if BiteClock.savedVariables.timeFormat == FormatWidth.SHORT then
         if days > 0 then table.insert(timeStrings, string.format("%dd", days)) end
         if hours > 0 then table.insert(timeStrings, string.format("%dh", hours)) end
         if minutes > 0 then table.insert(timeStrings, string.format("%dm", minutes)) end
         if seconds > 0 then table.insert(timeStrings, string.format("%ds", seconds)) end
         return "Ready in " .. table.concat(timeStrings, " ")
+    -- Long format ex: 1 day, 2 hours, 3 minutes, 4 seconds
     else
         if days > 0 then table.insert(timeStrings, pluralize(days, "day")) end
         if hours > 0 then table.insert(timeStrings, pluralize(hours, "hour")) end
@@ -350,32 +369,31 @@ local function GetCooldownText(biteCooldown)
     end
 end
 
+-- Handle normal player, without vampire or werewolf skill lines
 local function HandleNormalPlayer()
     local characterName = GetUnitName("player")
     local desire = BiteClock.savedVariables.desire
     
-    if (desire == PlayerType.VAMPIRE) then
-        BiteClockWindowStatus:SetText(characterName .. " desires to become a Vampire")
-    elseif (desire == PlayerType.WEREWOLF) then    
-        BiteClockWindowStatus:SetText(characterName .. " desires to become a Werewolf")
-    else
-        BiteClockWindowStatus:SetText(characterName .. " is not a Vampire or Werewolf")
-    end
-
-    if (desire ~= nil) then
+    -- Set text fields based on player desire
+    if (desire == PlayerType.VAMPIRE or desire == PlayerType.WEREWOLF) then
+        BiteClockWindowStatus:SetText(characterName .. " desires to become a " .. desire)
         BiteClockWindowTimer:SetText(BITECLOCK_VARS[desire].passiveName .. " unlocks at level 6")
         BiteClockWindowShrine:SetText(GetShrineInfo(desire))
     else
+        BiteClockWindowStatus:SetText(characterName .. " is not a Vampire or Werewolf")
         BiteClockWindowTimer:SetText("Bite skills unlock at level 6")
         BiteClockWindowShrine:SetText("Set desire with /biteclockvamp or /biteclockww")
     end
 
 end
 
+-- Handle vampire or werewolf players
 local function HandleSupernatural(playerType)
     -- Set appearance
     BiteClockWindowIcon:SetTexture(BITECLOCK_VARS[playerType].icon)
     BiteClockWindowStatus:SetColor(unpack(BITECLOCK_VARS[playerType].color))
+
+    -- TODO: Better checking for skill line unlock
 
     -- Check bite skill
     if not CheckBiteSkill(playerType) then
@@ -499,13 +517,11 @@ end
 -- Main function to check for bite updates
 local function biteClock()
     local playerType = GetPlayerType()
-
-    if playerType == PlayerType.NORMAL then
-        HandleNormalPlayer()
-    end
-
+ 
     if playerType == PlayerType.VAMPIRE or playerType == PlayerType.WEREWOLF then
         HandleSupernatural(playerType)
+    else
+        HandleNormalPlayer()
     end
 
     UpdateWindow(CheckBiteCooldown(playerType))
