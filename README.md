@@ -14,8 +14,8 @@ Provides a countdown timer for players that have a Vampire or Werewolf bite skil
 This is my first Elder Scrolls Online add-on, I wanted to learn how they are created so I started with something I've wanted for myself. In game I like providing werewolf and vampire bites as a means to build community and save others money (since Zenimax offers bites at a premium that I think is too high). I've also really enjoyed learning Lua🌜. I look forward to using it in other places.
 
 ### Installing
-
-Copy directory to your ESO add-ons folder:
+Depends on [LibGPS](https://www.esoui.com/downloads/info601-LibGPS.html) for locating shrines.
+Copy add-on directories to your ESO add-ons folder:
 
 Win 📂`C:\Users\<username>\Documents\Elder Scrolls Online\live\AddOns`\
 Mac 📂`~/Documents/Elder Scrolls Online/live/AddOns/`
