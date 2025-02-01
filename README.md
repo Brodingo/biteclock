@@ -31,10 +31,13 @@ Mac 📂`~/Documents/Elder Scrolls Online/live/AddOns/`
 ## Roadmap
 - [x] Zone assist, find a shrine to bite or get bitten
 - [x] Character planning, pick a track
+- [ ] Make LipGPS optional
 - [ ] Account wide, track cooldowns across characters
 - [ ] Bite request, a means for players to request or fulfill bites
 - [ ] Settings menu for certain slash commands
 - [ ] Localization
+- [ ] UI updates for choosing track, checking shrines, character cooldowns
+- [ ] Settings page for fonts, colors, window style, and text format
 
 ## Acknowledgements
 * [Great intro to ESO add-ons](https://www.youtube.com/watch?v=ZYsr5pVqhso) by [@moshulu](https://github.com/moshulu)
