@@ -37,6 +37,7 @@ Mac 📂`~/Documents/Elder Scrolls Online/live/AddOns/`
 - [ ] Settings menu for certain slash commands
 - [ ] Localization
 - [ ] UI updates for choosing track, checking shrines, character cooldowns
+- [ ] UI refactor to support dynamic sizing
 - [ ] Settings page for fonts, colors, window style, and text format
 
 ## Acknowledgements
