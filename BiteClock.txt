@@ -1,6 +1,6 @@
 ## Title: BiteClock
 ## Author: @Brodingo
-## APIVersion: 101045
+## APIVersion: 101046
 ## SavedVariables: BiteClockData
 ## DependsOn: LibGPS>=30
 
