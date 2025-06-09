@@ -7,7 +7,7 @@ Add-on for Elder Scrolls Online
 
 ## Description
 
-Provides a countdown timer for players that have a Vampire or Werewolf bite skill and want to know when it will be available for use. There is also guidance for finding shrines, which zones they are in and how to locate them. 
+Provides a countdown timer for players that have a Vampire or Werewolf bite skill and want to know when it will be available for use. Players can also choose what kind of monster they want to be with guidance for finding shrines, which zones they are in, and how to locate them.
 
 #### Motivation
 
