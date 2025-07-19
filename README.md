@@ -44,3 +44,6 @@ Mac 📂`~/Documents/Elder Scrolls Online/live/AddOns/`
 * [Great intro to ESO add-ons](https://www.youtube.com/watch?v=ZYsr5pVqhso) by [@moshulu](https://github.com/moshulu)
 * [DebugLogViewer by sirinsidiator](https://www.esoui.com/downloads/info2389-DebugLogViewer.html)
 
+### Submit a pull request
+
+If you'd like to contribute, please fork the repository and open a pull request to the `main` branch.
